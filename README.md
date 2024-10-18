@@ -19,26 +19,27 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
    
 5. SimpleEtherWallet runs on both Windows, and Linux!
 
-
 Linux users: To run SimpleEtherWallet on Linux, the program is ran like this
 
 1. open the terminal
 2. `cd` into the simpleetherwallet folder
 
-    cd /path/to/simplewallet
+```
+ cd /path/to/simplewallet
+```
 
 **Make sure to change** `/path/to/simpleetherwallet` **to the location where your simpleetherwallet folder is located**
 
 3. Check if you have the proper dependencies installed by executing the following command:
-
-    ./install-depends.sh
-
+```
+./install-depends.sh
+```
 This will ask you if you want to install missing dependencies (SimpleEtherWallet cannot run without these dependencies)
 
 4. Run SimpleEtherWallet by issuing the following command:
-
-    python3 ./simpleetherwallet.py
-
+```
+python3 ./simpleetherwallet.py
+```
 Done!
 
 Next time you want to launch SimpleEtherWallet, skip step 3.
