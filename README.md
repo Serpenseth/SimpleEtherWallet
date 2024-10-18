@@ -1,4 +1,4 @@
-# SimpleEthWallet
+# SimpleEtherWallet
 
 What is SimpleEtherWallet?
 
@@ -18,8 +18,14 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 
 4. SimpleEtherWallet runs on both Windows, and Linux!
 
+# Windows:
 
-Linux users: To run SimpleEtherWallet on Linux, the program is ran like this:
+Simply double-click `SimpleEtherWallet-amd64.exe` to start the installer.
+The installer will install all the files required to run SimpleEtherWallet.
+
+# Linux:
+
+To run SimpleEtherWallet on Linux, the program is ran like this:
 
 1. open the terminal
 
@@ -68,8 +74,11 @@ Then double-click `SimpleEtherWallet_installer`.
 
 Now you will not have a desktop shortcut!
 
+# Donate
 
 Donations cannot be made within the program, for now. However, the crypto that I accept via donations are listed in the "Donate" section of "Menu"
+
+# Contact me
 
 All comments, both positive, and negative, are welcome! Please email them to me!
 
