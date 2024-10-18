@@ -66,6 +66,8 @@ Donations cannot be made within the program, for now. However, the crypto that I
 
 All comments, both positive, and negative, are welcome! Please email them to me!
 
+How to reach me: enkisaur@tutanota.com
+
 [TO THE MOON!!!!]
 
 
