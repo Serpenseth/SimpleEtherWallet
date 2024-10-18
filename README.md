@@ -23,6 +23,22 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 Simply double-click `SimpleEtherWallet-amd64.exe` to start the installer.
 The installer will install all the files required to run SimpleEtherWallet.
 
+The source code of the Windows version of SimpleEtherWallet comes bundled with the files that are used to build the installer `SimpleEtherWallet_installer`.
+This gives you a look inside the installer, while also giving you the ability to customize the installer.
+
+**In order to modify the contents of the installer,** `NSIS` **is required.**
+
+For example; say you do not want the installer to create a desktop shortcut (which it does by default);
+To change this, delete the following line from `installer.nsi`:
+
+```
+CreateShortCut "$Desktop\SimpleEtherWallet.exe.lnk" "$INSTDIR\simpleetherwallet.pyw" \
+'' "$INSTDIR\eth.ico"
+```
+
+Once that is done, right click `installer.nsi`, and click `Compile NSIS Script`.
+Now you will not have a desktop shortcut when the program installs.
+
 # Linux:
 
 To run SimpleEtherWallet on Linux, the program is ran like this:
@@ -54,25 +70,6 @@ python3 ./simpleetherwallet.py
 Done!
 
 Next time you want to launch SimpleEtherWallet, skip step 3.
-
-
-The Windows source code comes bundled with the files that are used to build the installer `SimpleEtherWallet_installer`.
-This gives you a look inside the installer, while also giving you the ability to customize the installer.
-
-**In order to modify the contents of the installer,** `NSIS` **is required.**
-
-For example; say you do not want the installer to create a desktop shortcut (which it does by default);
-To change this, delete the following line from `installer.nsi`:
-
-```
-CreateShortCut "$Desktop\SimpleEtherWallet.exe.lnk" "$INSTDIR\simpleetherwallet.pyw" \
-'' "$INSTDIR\eth.ico"
-```
-
-Once that is done, right click `installer.nsi`, and click `Compile NSIS Script`.
-Then double-click `SimpleEtherWallet_installer`.
-
-Now you will not have a desktop shortcut!
 
 # Donate
 
