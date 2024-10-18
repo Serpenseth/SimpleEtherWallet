@@ -23,7 +23,7 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 Simply double-click `SimpleEtherWallet-amd64.exe` to start the installer.
 The installer will install all the files required to run SimpleEtherWallet.
 
-The source code of the Windows version of SimpleEtherWallet comes bundled with the files that are used to build the installer `SimpleEtherWallet_installer`.
+The source code of the Windows version of SimpleEtherWallet comes bundled with the files that are used to build the SimpleEtherWallet installer.
 This gives you a look inside the installer, while also giving you the ability to customize the installer.
 
 **In order to modify the contents of the installer,** `NSIS` **is required.**
