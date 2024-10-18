@@ -26,7 +26,7 @@ Linux users: To run SimpleEtherWallet on Linux, the program is ran like this:
 2. `cd` into the simpleetherwallet folder
 
 ```
-    cd /path/to/simplewallet
+cd /path/to/simplewallet
 ```
 
 **Make sure to change** `/path/to/simpleetherwallet` **to the location where your simpleetherwallet folder is located**
@@ -34,7 +34,7 @@ Linux users: To run SimpleEtherWallet on Linux, the program is ran like this:
 3. Check if you have the proper dependencies installed by executing the following command:
 
 ```
-    ./install-depends.sh
+./install-depends.sh
 ```
 
 This will ask you if you want to install missing dependencies (SimpleEtherWallet cannot run without these dependencies)
@@ -42,7 +42,7 @@ This will ask you if you want to install missing dependencies (SimpleEtherWallet
 4. Run SimpleEtherWallet by issuing the following command:
 
 ```
-    python3 ./simpleetherwallet.py
+python3 ./simpleetherwallet.py
 ```
 
 Done!
@@ -59,8 +59,8 @@ For example; say you do not want the installer to create a desktop shortcut (whi
 To change this, delete the following line from `installer.nsi`:
 
 ```
-    CreateShortCut "$Desktop\SimpleEtherWallet.exe.lnk" "$INSTDIR\simpleetherwallet.pyw" \
-      '' "$INSTDIR\eth.ico"
+CreateShortCut "$Desktop\SimpleEtherWallet.exe.lnk" "$INSTDIR\simpleetherwallet.pyw" \
+'' "$INSTDIR\eth.ico"
 ```
 
 Once that is done, right click `installer.nsi`, and click `Compile NSIS Script`.
