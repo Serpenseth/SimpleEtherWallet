@@ -66,7 +66,7 @@ Donations cannot be made within the program, for now. However, the crypto that I
 
 All comments, both positive, and negative, are welcome! Please email them to me!
 
-[ TO THE MOON!!!! ]
+[TO THE MOON!!!!]
 
 
 
