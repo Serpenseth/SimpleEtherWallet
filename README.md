@@ -9,34 +9,33 @@ It operates on the Ethereum mainnet, meaning that all ERC-20 tokens can be sent 
 
 SimpleEtherWallet currently does **not** support connecting to dApps, but this could change in the future.
 
-*Benefits of using SimpleEtherWallet*:
+*Benefits of using SimpleEtherWallet*
 1. Non-custodial. You own your crypto assets. Your private key is stored on your device, and it is also encrypted. Your private key does not leave your device while using SimpleEtherWallet as well.
 
-2. Simple. The design choices were all geared towards simplicity.
+3. Simple. The design choices were all geared towards simplicity.
 
-3. Lightweight. SimpleEtherWallet barely comsumes any resources. It is very light, and easy to run.
+4. Lightweight. SimpleEtherWallet barely comsumes any resources. It is very light, and easy to run.
     On my Windows 10 laptop that is running hardware that is a few years old, only 52.4 MB of ram is used!
+   
+5. SimpleEtherWallet runs on both Windows, and Linux!
 
-4. SimpleEtherWallet runs on both Windows, and Linux!
 
+Linux users: To run SimpleEtherWallet on Linux, the program is ran like this
 
-Linux users: To run SimpleEtherWallet on Linux, the program is ran like this:
-
-1) open the terminal
-
-2) `cd` into the simpleetherwallet folder
+1. open the terminal
+2. `cd` into the simpleetherwallet folder
 
     cd /path/to/simplewallet
 
 **Make sure to change** `/path/to/simpleetherwallet` **to the location where your simpleetherwallet folder is located**
 
-3) Check if you have the proper dependencies installed by executing the following command:
+3. Check if you have the proper dependencies installed by executing the following command:
 
     ./install-depends.sh
 
 This will ask you if you want to install missing dependencies (SimpleEtherWallet cannot run without these dependencies)
 
-4) Run SimpleEtherWallet by issuing the following command:
+4. Run SimpleEtherWallet by issuing the following command:
 
     python3 ./simpleetherwallet.py
 
