@@ -54,9 +54,9 @@ pip install segno && pip install web3 && pip install eth-account && pip install 
 Now you have everything!
 
 ## Final steps
-Move the `images` folder and `simpleetherwallet.pyw` into a folder of your choice (for example `C:\Users\Bob\SimpleEtherWallet`)
+Move the `images` folder and `simpleetherwallet-win.pyw` into a folder of your choice (for example `C:\Users\Bob\SimpleEtherWallet`)
 
-To run SimpleEtherWallet, double click `simpleetherwallet.pyw`.
+To run SimpleEtherWallet, double click `simpleetherwallet-win.pyw`.
 
 # Linux:
 
