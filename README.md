@@ -20,56 +20,89 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 
 # Windows:
 
-Simply double-click `SimpleEtherWallet-amd64.exe` to start the installer.
-The installer will install all the files required to run SimpleEtherWallet.
+## Requirements:
+SimpleEtherWallet is a Python program. You will need at least `python v3.7.0`.
 
-The source code of the Windows version of SimpleEtherWallet comes bundled with the files that are used to build the SimpleEtherWallet installer.
-This gives you a look inside the installer, while also giving you the ability to customize the installer.
+You can find the latest Python version here: [www.python.org/downloads/](www.python.org/downloads/)
 
-**In order to modify the contents of the installer,** `NSIS` **is required.**
-
-For example; say you do not want the installer to create a desktop shortcut (which it does by default);
-To change this, delete the following line from `installer.nsi`:
+Install Python and make sure it is installed correctly by `opening the cmd prompt` and issuing the following command:
 
 ```
-CreateShortCut "$Desktop\SimpleEtherWallet.exe.lnk" "$INSTDIR\simpleetherwallet.pyw" \
-'' "$INSTDIR\eth.ico"
+py --version
 ```
 
-Once that is done, right click `installer.nsi`, and click `Compile NSIS Script`.
-Now you will not have a desktop shortcut when the program installs.
+This will print `Python 3.12.6` (your version may be different)
+
+Now that you have `Python`, you will to issue a few commands with `Python`'s package manager called `pip`.
+The following packages are required to execute SimpleEtherWallet:
+
+`segno` version >= 1.6.1
+`web3` version >= 7.2.0
+`eth-account` version >= 0.13.3
+`urllib3` version >= 2.2.3
+
+To do this, issue the following string of commands in the terminal:
+
+```
+pip install segno && pip install web3 && pip install eth-account && pip install urllib3
+```
+
+Now you have everything!
+
+## Final steps
+Move the `images` folder and `simpleetherwallet.pyw` into a folder of your choice (for example `C:\Users\Bob\SimpleEtherWallet`)
+To run SimpleEtherWallet, double click `simpleetherwallet.pyw`
 
 # Linux:
 
-To run SimpleEtherWallet on Linux, the program is ran like this:
+## Requirements:
+`python v3.8.0`+ is needed on Linux.
 
-1. open the terminal
-
-2. `cd` into the simpleetherwallet folder
-
-```
-cd /path/to/simplewallet
-```
-
-**Make sure to change** `/path/to/simpleetherwallet` **to the location where your simpleetherwallet folder is located**
-
-3. Check if you have the proper dependencies installed by executing the following command:
+If you are on a distro that uses  `apt`, I have created the `install-depends.sh` script which takes care of all the dependencies for you. 
+Simple `cd` to where you have downloaded simpleetherwallet, and run
 
 ```
 ./install-depends.sh
 ```
 
-This will ask you if you want to install missing dependencies (SimpleEtherWallet cannot run without these dependencies)
-
-4. Run SimpleEtherWallet by issuing the following command:
+Then, you run the program by executing the following command:
 
 ```
 python3 ./simpleetherwallet.py
 ```
 
-Done!
+***If you prefer to do everything manually***
+If you do not have Python installed, or if your Python version is too old; issue the following command:
 
-Next time you want to launch SimpleEtherWallet, skip step 3.
+```
+sudo apt install python3
+```
+**Change** `apt` **to your distro's package manager**
+
+Now that you have Python, issue
+
+```
+python3 --version
+```
+
+if it does not result in an error, you have successfully installed Python3.
+
+Now you need the dependencies via `pip`.
+
+Simply execute the following string of commands:
+
+```
+pip install segno && pip install web3 && pip install eth-account && pip install urllib3
+```
+
+## Final steps
+Make sure the `images` folder is in the same folder as `simpleetherwallet.py`. Otherwise, the program will fail to run.
+
+To run SimpleEtherWallet, execute:
+
+```
+python3 ./simpleetherwallet.py
+```
 
 # Donate
 
