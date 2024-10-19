@@ -25,16 +25,25 @@ SimpleEtherWallet is a Python program. You will need at least `python v3.7.0`.
 
 You can find the latest Python version here: [www.python.org/downloads/](www.python.org/downloads/)
 
-Install Python and make sure it is installed correctly by opening the `cmd prompt` and issuing the following command:
+Now that you have `Python`, you can either execute the `install-depends.py`, or
+you will have to issue a few commands with `Python`'s package manager called `pip`.
+
+### install-depends.py route:
+1. `cd` into the SimpleEtherWallet that you have installed
 
 ```
-py --version
+cd /path/to/simpleetherwallet
 ```
 
-This will print `Python 3.12.6` (your version may be different)
+2. Run the `install-depends.py` script by issuing the following command
 
-Now that you have `Python`, you will to issue a few commands with `Python`'s package manager called `pip`.
+```
+py ./insta-depends.py
+```
 
+Once you have installed every dependency, you are ready to run SimpleEtherWallet (skip to Final Steps)
+
+### Manual route:
 The following packages are required to execute SimpleEtherWallet:
 
 `segno` version >= 1.6.1
@@ -63,43 +72,50 @@ To run SimpleEtherWallet, double click `simpleetherwallet-win.pyw`.
 ## Requirements:
 `python v3.8.0`+ is needed on Linux.
 
-If you are on a distro that uses  `apt`, I have created the `install-depends.sh` script which takes care of all the dependencies for you. 
-
-Simply `cd` to where you have downloaded simpleetherwallet, and run
-
-```
-./install-depends.sh
-```
-
-Then, you run SimpleEtherWallet by executing the following command:
-
-```
-python3 ./simpleetherwallet.py
-```
-
-***If you prefer to do everything manually***
-If you do not have Python installed, or if your Python version is too old; issue the following command:
+If you do not have Python installed, issue the following command:
 
 ```
 sudo apt install python3
 ```
+
 **Change** `apt` **to your distro's package manager**
 
-Now that you have Python, issue
+Now that you have `Python`, you can either execute the `install-depends.py`, or
+you will have to issue a few commands with `Python`'s package manager called `pip`.
+
+### install-depends.py route:
+1. `cd` into the SimpleEtherWallet that you have installed
 
 ```
-python3 --version
+cd /path/to/simpleetherwallet
 ```
 
-if it does not result in an error, you have successfully installed Python3.
+2. Run the `install-depends.py` script by issuing the following command
 
-Now you need the dependencies via `pip`.
+```
+py ./insta-depends.py
+```
 
-Simply execute the following string of commands:
+Once you have installed every dependency, you are ready to run SimpleEtherWallet (skip to Final Steps)
+
+### Manual route:
+The following packages are required to execute SimpleEtherWallet:
+
+`segno` version >= 1.6.1
+
+`web3` version >= 7.2.0
+
+`eth-account` version >= 0.13.3
+
+`urllib3` version >= 2.2.3
+
+To do this, issue the following string of commands in the terminal:
 
 ```
 pip install segno && pip install web3 && pip install eth-account && pip install urllib3
 ```
+
+Now you have everything!
 
 ## Final steps
 Make sure the `images` folder is in the same folder as `simpleetherwallet.py`. Otherwise, the program will fail to run.
