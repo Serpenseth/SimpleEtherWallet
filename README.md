@@ -112,7 +112,9 @@ python3 ./simpleetherwallet.py
 
 # Donate
 
-Donations cannot be made within the program, for now. However, the crypto that I accept via donations are listed in the "Donate" section of "Menu"
+ETH address: 0x508547c4Bac880C1f4A2336E39C55AB520d43F59
+
+Donations cannot be made within the program, for now. However, the crypto that I accept (other than `ETH` via donations are listed in the "Donate" section of "Menu"
 
 # Contact me
 
