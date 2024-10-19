@@ -93,7 +93,7 @@ cd /path/to/simpleetherwallet
 2. Run the `install-depends.py` script by issuing the following command
 
 ```
-py ./insta-depends.py
+python3 ./insta-depends.py
 ```
 
 Once you have installed every dependency, you are ready to run SimpleEtherWallet (skip to Final Steps)
