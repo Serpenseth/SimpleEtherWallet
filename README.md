@@ -25,7 +25,7 @@ SimpleEtherWallet is a Python program. You will need at least `python v3.7.0`.
 
 You can find the latest Python version here: [www.python.org/downloads/](www.python.org/downloads/)
 
-Install Python and make sure it is installed correctly by `opening the cmd prompt` and issuing the following command:
+Install Python and make sure it is installed correctly by opening the `cmd prompt` and issuing the following command:
 
 ```
 py --version
@@ -34,11 +34,15 @@ py --version
 This will print `Python 3.12.6` (your version may be different)
 
 Now that you have `Python`, you will to issue a few commands with `Python`'s package manager called `pip`.
+
 The following packages are required to execute SimpleEtherWallet:
 
 `segno` version >= 1.6.1
+
 `web3` version >= 7.2.0
+
 `eth-account` version >= 0.13.3
+
 `urllib3` version >= 2.2.3
 
 To do this, issue the following string of commands in the terminal:
@@ -51,7 +55,8 @@ Now you have everything!
 
 ## Final steps
 Move the `images` folder and `simpleetherwallet.pyw` into a folder of your choice (for example `C:\Users\Bob\SimpleEtherWallet`)
-To run SimpleEtherWallet, double click `simpleetherwallet.pyw`
+
+To run SimpleEtherWallet, double click `simpleetherwallet.pyw`.
 
 # Linux:
 
@@ -59,13 +64,14 @@ To run SimpleEtherWallet, double click `simpleetherwallet.pyw`
 `python v3.8.0`+ is needed on Linux.
 
 If you are on a distro that uses  `apt`, I have created the `install-depends.sh` script which takes care of all the dependencies for you. 
-Simple `cd` to where you have downloaded simpleetherwallet, and run
+
+Simply `cd` to where you have downloaded simpleetherwallet, and run
 
 ```
 ./install-depends.sh
 ```
 
-Then, you run the program by executing the following command:
+Then, you run SimpleEtherWallet by executing the following command:
 
 ```
 python3 ./simpleetherwallet.py
