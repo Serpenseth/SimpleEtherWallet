@@ -16,7 +16,10 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 3. Lightweight. SimpleEtherWallet barely comsumes any resources. It is very light, and easy to run.
     On my Windows 10 laptop that is running hardware that is a few years old, only 52.4 MB of ram is used!
 
-4. SimpleEtherWallet runs on both Windows, and Linux!
+4. You can add any coin that isn't listed on a centralized exhange.
+    Why on centralized exhanges? Well, I use an API that is free. A paid API is something I cannot afford.
+ 
+5. SimpleEtherWallet runs on both Windows, and Linux!
 
 # Windows:
 
