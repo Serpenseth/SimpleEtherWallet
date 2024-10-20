@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#===Version 1.1===#
+#===Version2.0===#
 
 # NOTE I'm a Python newbie; the code is messy!!!!
 
@@ -198,8 +198,7 @@ def fetch_eth_price_in(coin_symbol) -> float:
 
     return float(pricedata)
 
-# Test this
-def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to) -> float:
+""" Old def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to) -> float:
     page_data2 = ''
 
     try:
@@ -217,10 +216,33 @@ def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to) -> float:
     pricedata2 = page2[start:end]
     pricedata2 = pricedata2.replace(":", '')
     pricedata2 = pricedata2.replace(coin_symbol_to, '')
-    pricedata2 = pricedata2.replace('"', '')\
+    pricedata2 = pricedata2.replace('"', '')
 
     return float(pricedata2)
+"""
 
+def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to: str) -> float:
+    #https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+    import ssl
+
+    context = ssl._create_unverified_context()
+
+    # A MUCH better API to fetch token price
+    page_data2 = urlopen(
+        f"https://min-api.cryptocompare.com/data/price?fsym={coin_symbol_base}&tsyms={coin_symbol_to}",
+        context=context
+    ).read()
+
+    page2 = page_data2.decode('utf-8')
+    page2 = page2.replace('{"USDT":', '')
+    page2 = page2[:len(page2) - 1]
+
+    if 'Response' in page2:
+        return 0.0
+
+    return float(page2)
+
+# TODO: Group these into a class
 class recover_acc(tk.Toplevel):
     def __init__(self = Toplevel):
         super().__init__()
@@ -1397,6 +1419,7 @@ class importwalletwindow(tk.Toplevel):
         newline(self, pady = 1)
 
 
+
 ## @@FIRST SCREEN@@ ##
 window = Tk()
 window.title("SimpleEtherWallet")
@@ -1805,6 +1828,8 @@ aboutbar_opts = tk.Menu(
     tearoff = 0
 )
 
+
+# TODO: Group these into a class
 # Images
 class ImageLinks(tk.Toplevel):
     def __init__(self):
@@ -1951,6 +1976,7 @@ class License(tk.Toplevel):
 
         self.textbox.configure(state = 'disabled')
 
+# About wallet
 class AboutWallet(tk.Toplevel):
     def __init__(self):
         super().__init__()
@@ -2003,6 +2029,7 @@ class AboutWallet(tk.Toplevel):
 
         self.textbox.configure(state = 'disabled')
 
+# Show recovery key
 class ShowRecoveryKey(tk.Toplevel):
     def __init__(self):
         super().__init__()
@@ -2280,6 +2307,7 @@ class ShowRecoveryKey(tk.Toplevel):
             side = 'right'
         )
 
+# Donate ETH
 class DonateEther(tk.Toplevel):
     def __init__(self):
         super().__init__()
@@ -3577,1363 +3605,1229 @@ def create_contract(address: str):
         abi = abi
     )
 
-# Send crypto window
-class sendcryptowindow(tk.Toplevel):
-    def __init__(self = tk.Toplevel):
-        super().__init__()
+# BEGIN class CoinFunctions
+class CoinFunctions:
 
-        main.withdraw()
+    # Send crypto window
+    class SendCryptoWindow(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-        self.title("SimpleEtherWallet  -  Send")
-        self.resizable(False, False)
-        self.protocol(
-            "WM_DELETE_WINDOW",
-            lambda: [
-                main.deiconify(),
-                self.destroy()
+            main.withdraw()
+
+            self.title("SimpleEtherWallet  -  Send")
+            self.resizable(False, False)
+            self.protocol(
+                "WM_DELETE_WINDOW",
+                lambda: [
+                    main.deiconify(),
+                    self.destroy()
+                ]
+            )
+
+            if os.name == 'nt':
+                center_window(600, 520, self)
+
+            else:
+                center_window(640, 520, self)
+
+            tk.Label(
+                master = self,
+                text = '\nSend ERC-20 asset',
+                font = 'bold 14'
+            ).pack(pady = 10)
+
+            self.frame_p = tk.LabelFrame(
+                master = self,
+                bd = 5
+            )
+
+            self.frame_p.pack(
+                pady = 20,
+                padx = 20,
+                anchor = 'center',
+                fill = tk.BOTH,
+                expand = True
+            )
+
+            self.stuff = [
+                "Asset: ",
+                "Address: ",
+                "Amount: ",
+                "Gas fee: ",
+                "Priority fee:"
             ]
-        )
-
-        if os.name == 'nt':
-            center_window(600, 520, self)
-        
-        else:
-            center_window(640, 520, self)
-
-        tk.Label(
-            master = self,
-            text = '\nSend ERC-20 asset',
-            font = 'bold 14'
-        ).pack(pady = 10)
-
-        frame_p = tk.LabelFrame(
-            master = self,
-            bd = 5
-        )
-
-        frame_p.pack(
-            pady = 20,
-            padx = 20,
-            anchor = 'center',
-            fill = tk.BOTH,
-            expand = True
-        )
-
-        stuff = [
-            "Asset: ",
-            "Address: ",
-            "Amount: ",
-            "Gas fee: ",
-            "Priority fee:"
-        ]
-
-        row_configs = {
-            'padx': 22,
-            'pady': 7,
-            'anchor': 'w',
-            'fill': 'x',
-            'expand': True
-        }
-
-        # Address
-        sendcryptowindow.stringentry1 = StringVar()
-
-        # Amount
-        stringentry2 = StringVar()
-
-        gasfee_entry = StringVar()
-        pfee_entry = StringVar()
-
-        # BEGIN Asset
-        row1 = tk.Frame(master = frame_p)
-        row1.pack(**row_configs)
-
-        tk.Label(
-            master = row1,
-            text = stuff[0],
-            font = 'bold 13'
-        ).pack(
-            side = 'left',
-            padx = 5,
-        )
-
-        values = []
-
-        box = ttk.Combobox(
-            master = row1,
-            state = 'readonly',
-            values = values,
-            width = 7
-        )
-
-        box['values'] = 'ETH'
-
-        for i in range(0, len(assets_addr)):
-            contract          = create_contract(assets_addr[i])
-            token_symbol = contract.functions.symbol().call()
-
-            # https://stackoverflow.com/questions/51590357/appending-values-to-ttk-comboboxvalues-without-reloading-combobox
-            # note: I needed a way to update combobox; reload or not isn't important
-            box['values'] = (*box['values'], token_symbol)
-
-        box.pack(
-            padx = 19,
-            ipady = 5,
-            side = 'left'
-        )
-
-        #box.current(0)
-
-        balance = StringVar()
-
-        balance_text = tk.Label(
-            master = row1,
-            text = '',
-            font = 'bold 12'
-        )
-
-        balance_text.pack(
-            side = 'left',
-        )
-
-        def get_asset_val(event):
-            selected = box.current()
-
-            self.assetlist = assets_addr
-
-            if selected == 0:
-                balance_text.configure(
-                    text = f"Balance: ~{str(w3.from_wei(w3.eth.get_balance(account.address), 'ether'))[:12]} ETH"
-                )
-
-            else:
-                contract = create_contract(self.assetlist[selected - 1])
-                val          = contract.functions.balanceOf(account.address).call()
-
-                balance_text.configure(
-                    #text = f"Balance: {str(float(w3.from_wei(val, 'ether')) * float(fetch_eth_price_in('USDT')))}"
-                    text = f"Balance: ~{str(w3.from_wei(val, 'ether'))[:12]} {contract.functions.symbol().call()}"
-                )
-
-        box.bind("<<ComboboxSelected>>", get_asset_val)
-        # END Asset
-
-        # BEGIN Address
-        row2 = tk.Frame(master = frame_p)
-        row2.pack(**row_configs)
-
-        label1 = tk.Label(
-            master = row2,
-            text = stuff[1],
-            font = 'bold 13'
-        )
-
-        label1.pack(
-            padx = 5,
-            pady = 7,
-            side = 'left'
-        )
-
-        entry1 = tk.Entry(
-            master = row2,
-            width = 40,
-            font = 'bold 9',
-            textvariable = self.stringentry1
-        )
-
-        def entry1event(event):
-            self.stringentry1.set(self.stringentry1.get()[:42])
-
-            if len(entry1.get()) == 0:
-                entry1.config(
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-            elif not w3.is_address(entry1.get()):
-                entry1.config(
-                    highlightbackground = 'red',
-                    highlightthickness = 1
-                )
-
-            else:
-                entry1.config(
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-        entry1.bind('<KeyRelease>', entry1event)
-        entry1.bind('<Button-1>', entry1event)
-
-        entry1.pack(
-            ipady = 5,
-            pady = 7,
-            ipadx = 2,
-            side = 'left'
-        )
-
-        global abook
-
-        abook = PhotoImage(file = imgfolder + 'icons8-open-book-24.png')
-
-        class abookwindow(tk.Toplevel):
-            def __init__(self):
-                super().__init__()
-
-                self.title("SimpleEtherWallet  -  Contacts")
-                self.resizable(False, False)
-                self.protocol(
-                    "WM_DELETE_WINDOW",
-                    self.destroy
-                )
-
-                center_window(570, 480, self)
-
-                self.boxframe = tk.LabelFrame(
-                    master = self,
-                    bd = 4
-                )
-
-                self.boxframe.pack(
-                    pady = 20,
-                    padx = 20,
-                    fill = tk.BOTH,
-                    expand = True,
-                )
-
-                self.box = tk.Listbox(
-                    master = self.boxframe,
-                    font = 'bold 11'
-                )
-
-                self.box.pack(
-                    padx = 4,
-                    pady = 4,
-                    fill = tk.BOTH,
-                    expand = True,
-                )
-
-                sbar = tk.Scrollbar(
-                    self.box,
-                    repeatdelay = 1
-                )
-
-                sbar.pack(
-                    side = 'right',
-                    fill = tk.Y
-                )
-
-
-                self.contactchoice = ''
-
-                for i in range(0, len(contactbook['name'])):
-                    self.box.insert(END, contactbook['name'][i] + ' (' + contactbook['address'][i] + ')')
-
-                def get_choice(*args):
-                    choice = str(self.box.curselection()).replace('(', '').replace(',)', '')
-
-                    num: int = int(choice)
-
-                    self.contactchoice = contactbook['address'][num]
-
-                    #sendcryptowindow.stringentry1.set(contactbook['address'][num])
-                    #self.destroy()
-
-                self.box.bind('<<ListboxSelect>>', get_choice)
-
-                self.btnframe = tk.Frame(master = self)
-                self.btnframe.pack(
-                    pady = 10,
-                    padx = 30
-                )
-
-                b1 = tk.Button(
-                    master = self.btnframe,
-                    text = 'Cancel',
-                    font = 'bold 16',
-                    command = self.destroy
-                )
-
-                b1.pack(
-                    side = 'left',
-                    padx = 20,
-                    ipady = 4,
-                    ipadx = 12
-                )
-
-                b2 = tk.Button(
-                    master = self.btnframe,
-                    text = 'Done',
-                    font = 'bold 16',
-                    command = lambda: [
-                        sendcryptowindow.stringentry1.set(self.contactchoice),
-                        self.destroy()
-                    ]
-                )
-
-                b2.pack(
-                    side = 'left',
-                    ipady = 4,
-                    ipadx = 12
-                )
-
-                newline(self)
-
-        abookbtn = tk.Button(
-            master = row2,
-            image = abook,
-            command = abookwindow
-        )
-
-        abookbtn.pack(
-            side = 'left',
-            padx = 14
-        )
-
-        # END Address
-
-        # BEGIN Amount
-        row3 = tk.Frame(master = frame_p)
-        row3.pack(**row_configs)
-
-        label2 = tk.Label(
-            master = row3,
-            text = stuff[2],
-            font = 'bold 12'
-        )
-
-        label2.pack(
-            padx = 5,
-            side = 'left'
-        )
-
-        entry2 = tk.Entry(
-            master = row3,
-            width = 25,
-            font = 'bold 12',
-            textvariable = stringentry2
-        )
-
-        entry2.pack(
-            ipady = 5,
-            padx = 8,
-            side = 'left'
-        )
-
-        def validamount(event):
-            if len(entry2.get()) == 0:
-                entry2.config(
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-            elif entry2.get().count('.') == 0:
-                if entry2.get().isdigit() == False:
-                    entry2.config(
-                        highlightbackground = 'red',
-                        highlightthickness = 1
+
+            self.row_configs = {
+                'padx': 22,
+                'pady': 7,
+                'anchor': 'w',
+                'fill': 'x',
+                'expand': True
+            }
+
+            # Address
+            stringentry1 = StringVar()
+
+            # Amount
+            stringentry2 = StringVar()
+
+            gasfee_entry = StringVar()
+
+            # BEGIN Asset
+            self.row1 = tk.Frame(master = self.frame_p)
+            self.row1.pack(**self.row_configs)
+
+            tk.Label(
+                master = self.row1,
+                text = self.stuff[0],
+                font = 'bold 13'
+            ).pack(
+                side = 'left',
+                padx = 5,
+            )
+
+            self.values = []
+
+            box = ttk.Combobox(
+                master = self.row1,
+                state = 'readonly',
+                values = self.values,
+                width = 7
+            )
+
+            box['values'] = 'ETH'
+
+            for i in range(0, len(assets_addr)):
+                self.contract          = create_contract(assets_addr[i])
+                self.token_symbol = self.contract.functions.symbol().call()
+
+                # https://stackoverflow.com/questions/51590357/appending-values-to-ttk-comboboxvalues-without-reloading-combobox
+                # note: I needed a way to update combobox; reload or not isn't important
+                box['values'] = (*box['values'], self.token_symbol)
+
+            box.pack(
+                padx = 19,
+                ipady = 5,
+                side = 'left'
+            )
+
+            balance = StringVar()
+
+            self.balance_text = tk.Label(
+                master = self.row1,
+                text = '',
+                font = 'bold 12'
+            )
+
+            self.balance_text.pack(
+                side = 'left',
+            )
+
+            def get_asset_val(event):
+                self.selected = box.current()
+
+                self.assetlist = assets_addr
+
+                if self.selected == 0:
+                    self.balance_text.configure(
+                        text = f"Balance: ~{str(w3.from_wei(w3.eth.get_balance(account.address), 'ether'))[:12]} ETH"
                     )
 
-                elif entry2.get().isdigit() == True:
-                    if entry2.get() == '0':
-                        entry2.config(
-                        highlightbackground = 'red',
-                        highlightthickness = 1
+                else:
+                    self.contract = create_contract(self.assetlist[self.selected - 1])
+                    self.val          = self.contract.functions.balanceOf(account.address).call()
+
+                    self.balance_text.configure(
+                        text = f"Balance: ~{str(w3.from_wei(self.val, 'ether'))[:12]} {self.contract.functions.symbol().call()}"
                     )
 
-                    else:
-                        entry2.config(
-                            highlightbackground = 'green',
-                            highlightthickness = 1
-                        )
+            box.bind("<<ComboboxSelected>>", get_asset_val)
+            # END Asset
 
-            elif entry2.get().count('.') == 1:
-                if entry2.get().startswith('.'):
-                    entry2.config(
+            # BEGIN Address
+            row2 = tk.Frame(master = self.frame_p)
+            row2.pack(**self.row_configs)
+
+            label1 = tk.Label(
+                master = row2,
+                text = self.stuff[1],
+                font = 'bold 13'
+            )
+
+            label1.pack(
+                padx = 5,
+                pady = 7,
+                side = 'left'
+            )
+
+            entry1 = tk.Entry(
+                master = row2,
+                width = 40,
+                font = 'bold 9',
+                textvariable = stringentry1
+            )
+
+            def entry1event(event):
+                stringentry1.set(stringentry1.get()[:42])
+
+                if len(entry1.get()) == 0:
+                    entry1.config(
+                        highlightbackground = 'black',
+                        highlightthickness = 0
+                    )
+
+                elif not w3.is_address(entry1.get()):
+                    entry1.config(
                         highlightbackground = 'red',
                         highlightthickness = 1
                     )
 
                 else:
-                    n = entry2.get().replace('.', '')
-
-                    if n.isdigit() == False:
-                        entry2.config(
-                            highlightbackground = 'red',
-                            highlightthickness = 1
-                        )
-
-                    else:
-                        entry2.config(
-                            highlightbackground = 'black',
-                            highlightthickness = 0
-                        )
-
-            elif entry2.get().count('.') > 1:
-                entry2.config(
-                    highlightbackground = 'red',
-                    highlightthickness = 1
-                )
-
-        entry2.register(validamount)
-        entry2.bind('<KeyRelease>', validamount)
-
-        sc_percent = IntVar()
-
-        sc_amount = tk.Scale(
-            master = row3,
-            from_ = 0,
-            to = 100,
-            resolution = 25,
-            orient = 'horizontal',
-            length = 100,
-            digits = 3,
-            bd = 4,
-            cursor = 'cross',
-            variable = sc_percent,
-        )
-
-        sendcryptowindow.sc_val:float = 0.0
-
-        def sc_cmd(event):
-            selected = box.current()
-
-            if selected == 0:
-                self.user_balance = w3.from_wei(w3.eth.get_balance(account.address), 'ether')
-
-            else:
-                contract = create_contract(assets_addr[selected - 1])
-                val          = contract.functions.balanceOf(account.address).call()
-
-                self.user_balance = val
-
-            #if sc_amount.get() == 25:
-            if sc_percent.get() == 100:
-                sendcryptowindow.sc_val = self.user_balance
-                stringentry2.set('ALL')
-
-            elif sc_percent.get() == 0:
-                stringentry2.set('')
-
-            elif sc_percent.get() == 25:
-                sendcryptowindow.sc_val = float(self.user_balance) * 0.25
-                stringentry2.set(str(sendcryptowindow.sc_val))
-
-            elif sc_percent.get() == 50:
-                sendcryptowindow.sc_val = float(self.user_balance) * 0.5
-                stringentry2.set(str(sendcryptowindow.sc_val))
-
-            elif sc_percent.get() == 75:
-                sendcryptowindow.sc_val = float(self.user_balance) * 0.75
-                stringentry2.set(str(sendcryptowindow.sc_val))
-
-        sc_amount.bind('<ButtonRelease-1>', sc_cmd)
-        sc_amount.bind('<Button-1>', sc_cmd)
-
-        sc_amount.set(0)
-
-        sc_amount.pack(
-            ipady = 8,
-            padx = 7,
-            side = 'left'
-        )
-        # END Amount
-
-        # BEGIN Gas fee
-        row4 = tk.Frame(master = frame_p)
-        row4.pack(**row_configs)
-
-        label3 = tk.Label(
-            master = row4,
-            text = stuff[3],
-            font = 'bold 12'
-        )
-
-        label3.pack(
-            padx = 4,
-            side = 'left'
-        )
-
-        entry3 = tk.Entry(
-            master = row4,
-            width = 20,
-            font = 'bold 12',
-            textvariable = gasfee_entry,
-            state = 'readonly'
-        )
-
-        entry3.pack(
-            ipady = 5,
-            padx = 8,
-            side = 'left'
-        )
-
-        checkbox_gasopt = IntVar()
-
-        gasfee_entry.set(str(w3.eth.gas_price / 10000000000)[:23])
-
-        def updategas():
-            if checkbox_gasopt.get() == 0:
-                gasfee_entry.set(str(w3.eth.gas_price / 10000000000)[:23])
-
-            self.after(14000, updategas)
-
-        loop = self.after(14000, updategas)
-
-        self.after(14000, updategas)
-
-        def customgasfee():
-            if checkbox_gasopt.get() == 1:
-                entry3.config(
-                    state = 'normal',
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-                entry3.delete(0, tk.END)
-
-            else:
-                entry3.config(
-                    state = 'readonly',
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-                self.after_cancel(loop)
-                updategas()
-
-        checkbox_gas = tk.Checkbutton(
-            master = row4,
-            text = 'custom gas',
-            variable = checkbox_gasopt,
-            command = customgasfee
-        )
-
-        checkbox_gas.pack(
-            padx = 20,
-            side = 'left'
-        )
-
-        def validgas(event):
-            if checkbox_gasopt.get() == 1:
-                if len(entry3.get()) == 0:
-                    entry3.config(
+                    entry1.config(
                         highlightbackground = 'black',
                         highlightthickness = 0
                     )
 
-                elif entry3.get().count('.') == 0:
-                    if entry3.get().isdigit() == False:
-                        entry3.config(
+            entry1.bind('<KeyRelease>', entry1event)
+            entry1.bind('<Button-1>', entry1event)
+
+            entry1.pack(
+                ipady = 5,
+                pady = 7,
+                ipadx = 2,
+                side = 'left'
+            )
+
+            global abook
+
+            abook = PhotoImage(file = imgfolder + 'icons8-open-book-24.png')
+
+            class abookwindow(tk.Toplevel):
+                def __init__(self):
+                    super().__init__()
+
+                    self.title("SimpleEtherWallet  -  Contacts")
+                    self.resizable(False, False)
+                    self.protocol(
+                        "WM_DELETE_WINDOW",
+                        self.destroy
+                    )
+
+                    center_window(570, 480, self)
+
+                    self.boxframe = tk.LabelFrame(
+                        master = self,
+                        bd = 4
+                    )
+
+                    self.boxframe.pack(
+                        pady = 20,
+                        padx = 20,
+                        fill = tk.BOTH,
+                        expand = True,
+                    )
+
+                    self.box = tk.Listbox(
+                        master = self.boxframe,
+                        font = 'bold 11'
+                    )
+
+                    self.box.pack(
+                        padx = 4,
+                        pady = 4,
+                        fill = tk.BOTH,
+                        expand = True,
+                    )
+
+                    sbar = tk.Scrollbar(
+                        self.box,
+                        repeatdelay = 1
+                    )
+
+                    sbar.pack(
+                        side = 'right',
+                        fill = tk.Y
+                    )
+
+
+                    self.contactchoice = ''
+
+                    for i in range(0, len(contactbook['name'])):
+                        self.box.insert(END, contactbook['name'][i] + ' (' + contactbook['address'][i] + ')')
+
+                    def get_choice(*args):
+                        choice = str(self.box.curselection()).replace('(', '').replace(',)', '')
+
+                        num: int = int(choice)
+
+                        self.contactchoice = contactbook['address'][num]
+
+                        #sendcryptowindow.stringentry1.set(contactbook['address'][num])
+                        #self.destroy()
+
+                    self.box.bind('<<ListboxSelect>>', get_choice)
+
+                    self.btnframe = tk.Frame(master = self)
+                    self.btnframe.pack(
+                        pady = 10,
+                        padx = 30
+                    )
+
+                    b1 = tk.Button(
+                        master = self.btnframe,
+                        text = 'Cancel',
+                        font = 'bold 16',
+                        command = self.destroy
+                    )
+
+                    b1.pack(
+                        side = 'left',
+                        padx = 20,
+                        ipady = 4,
+                        ipadx = 12
+                    )
+
+                    b2 = tk.Button(
+                        master = self.btnframe,
+                        text = 'Done',
+                        font = 'bold 16',
+                        command = lambda: [
+                            stringentry1.set(self.contactchoice),
+                            self.destroy()
+                        ]
+                    )
+
+                    b2.pack(
+                        side = 'left',
+                        ipady = 4,
+                        ipadx = 12
+                    )
+
+                    newline(self)
+
+            abookbtn = tk.Button(
+                master = row2,
+                image = abook,
+                command = abookwindow
+            )
+
+            abookbtn.pack(
+                side = 'left',
+                padx = 14
+            )
+
+            # END Address
+
+            # BEGIN Amount
+            row3 = tk.Frame(master = self.frame_p)
+            row3.pack(**self.row_configs)
+
+            label2 = tk.Label(
+                master = row3,
+                text = self.stuff[2],
+                font = 'bold 12'
+            )
+
+            label2.pack(
+                padx = 5,
+                side = 'left'
+            )
+
+            entry2 = tk.Entry(
+                master = row3,
+                width = 25,
+                font = 'bold 12',
+                textvariable = stringentry2
+            )
+
+            entry2.pack(
+                ipady = 5,
+                padx = 8,
+                side = 'left'
+            )
+
+            def validamount(event):
+                if len(entry2.get()) == 0:
+                    entry2.config(
+                        highlightbackground = 'black',
+                        highlightthickness = 0
+                    )
+
+                elif entry2.get().count('.') == 0:
+                    if entry2.get().isdigit() == False:
+                        entry2.config(
                             highlightbackground = 'red',
                             highlightthickness = 1
                         )
 
-                    elif entry3.get().isdigit() == True:
-                        if entry3.get() == '0':
-                            entry3.config(
+                    elif entry2.get().isdigit() == True:
+                        if entry2.get() == '0':
+                            entry2.config(
                             highlightbackground = 'red',
                             highlightthickness = 1
                         )
 
                         else:
-                            entry3.config(
+                            entry2.config(
                                 highlightbackground = 'green',
                                 highlightthickness = 1
                             )
 
-                elif entry3.get().count('.') == 1:
-                    if entry3.get().startswith('.'):
-                        entry3.config(
+                elif entry2.get().count('.') == 1:
+                    if entry2.get().startswith('.'):
+                        entry2.config(
                             highlightbackground = 'red',
                             highlightthickness = 1
                         )
 
                     else:
-                        n = entry3.get().replace('.', '')
+                        n = entry2.get().replace('.', '')
 
                         if n.isdigit() == False:
+                            entry2.config(
+                                highlightbackground = 'red',
+                                highlightthickness = 1
+                            )
+
+                        else:
+                            entry2.config(
+                                highlightbackground = 'black',
+                                highlightthickness = 0
+                            )
+
+                elif entry2.get().count('.') > 1:
+                    entry2.config(
+                        highlightbackground = 'red',
+                        highlightthickness = 1
+                    )
+
+            entry2.register(validamount)
+            entry2.bind('<KeyRelease>', validamount)
+
+            sc_percent = IntVar()
+
+            sc_amount = tk.Scale(
+                master = row3,
+                from_ = 0,
+                to = 100,
+                resolution = 25,
+                orient = 'horizontal',
+                length = 100,
+                digits = 3,
+                bd = 4,
+                cursor = 'cross',
+                variable = sc_percent,
+            )
+
+            self.sc_val:float = 0.0
+
+            def sc_cmd(event):
+                selected = box.current()
+
+                if selected == 0:
+                    self.user_balance = w3.from_wei(w3.eth.get_balance(account.address), 'ether')
+
+                else:
+                    contract = create_contract(assets_addr[selected - 1])
+                    val          = contract.functions.balanceOf(account.address).call()
+
+                    self.user_balance = val
+
+                #if sc_amount.get() == 25:
+                if sc_percent.get() == 100:
+                    self.sc_val = self.user_balance
+                    stringentry2.set('ALL')
+
+                elif sc_percent.get() == 0:
+                    stringentry2.set('')
+
+                elif sc_percent.get() == 25:
+                    self.sc_val = float(self.user_balance) * 0.25
+                    stringentry2.set(str(self.sc_val))
+
+                elif sc_percent.get() == 50:
+                    self.sc_val = float(self.user_balance) * 0.5
+                    stringentry2.set(str(self.sc_val))
+
+                elif sc_percent.get() == 75:
+                    self.sc_val = float(self.user_balance) * 0.75
+                    stringentry2.set(str(self.sc_val))
+
+            sc_amount.bind('<ButtonRelease-1>', sc_cmd)
+            sc_amount.bind('<Button-1>', sc_cmd)
+
+            sc_amount.set(0)
+
+            sc_amount.pack(
+                ipady = 8,
+                padx = 7,
+                side = 'left'
+            )
+            # END Amount
+
+            # BEGIN Gas fee
+            row4 = tk.Frame(master = self.frame_p)
+            row4.pack(**self.row_configs)
+
+            label3 = tk.Label(
+                master = row4,
+                text = self.stuff[3],
+                font = 'bold 12'
+            )
+
+            label3.pack(
+                padx = 4,
+                side = 'left'
+            )
+
+            entry3 = tk.Entry(
+                master = row4,
+                width = 20,
+                font = 'bold 12',
+                textvariable = gasfee_entry,
+                state = 'readonly'
+            )
+
+            entry3.pack(
+                ipady = 5,
+                padx = 8,
+                side = 'left'
+            )
+
+            checkbox_gasopt = IntVar()
+
+            gasfee_entry.set(str(w3.eth.gas_price / 10000000000)[:23])
+
+            def updategas():
+                if checkbox_gasopt.get() == 0:
+                    gasfee_entry.set(str(w3.eth.gas_price / 10000000000)[:23])
+
+                self.after(14000, updategas)
+
+            loop = self.after(14000, updategas)
+
+            self.after(14000, updategas)
+
+            def customgasfee():
+                if checkbox_gasopt.get() == 1:
+                    entry3.config(
+                        state = 'normal',
+                        highlightbackground = 'black',
+                        highlightthickness = 0
+                    )
+
+                    entry3.delete(0, tk.END)
+
+                else:
+                    entry3.config(
+                        state = 'readonly',
+                        highlightbackground = 'black',
+                        highlightthickness = 0
+                    )
+
+                    self.after_cancel(loop)
+                    updategas()
+
+            checkbox_gas = tk.Checkbutton(
+                master = row4,
+                text = 'custom gas',
+                variable = checkbox_gasopt,
+                command = customgasfee
+            )
+
+            checkbox_gas.pack(
+                padx = 20,
+                side = 'left'
+            )
+
+            def validgas(event):
+                if checkbox_gasopt.get() == 1:
+                    if len(entry3.get()) == 0:
+                        entry3.config(
+                            highlightbackground = 'black',
+                            highlightthickness = 0
+                        )
+
+                    elif entry3.get().count('.') == 0:
+                        if entry3.get().isdigit() == False:
+                            entry3.config(
+                                highlightbackground = 'red',
+                                highlightthickness = 1
+                            )
+
+                        elif entry3.get().isdigit() == True:
+                            if entry3.get() == '0':
+                                entry3.config(
+                                highlightbackground = 'red',
+                                highlightthickness = 1
+                            )
+
+                            else:
+                                entry3.config(
+                                    highlightbackground = 'green',
+                                    highlightthickness = 1
+                                )
+
+                    elif entry3.get().count('.') == 1:
+                        if entry3.get().startswith('.'):
                             entry3.config(
                                 highlightbackground = 'red',
                                 highlightthickness = 1
                             )
 
                         else:
-                            entry3.config(
-                                highlightbackground = 'black',
-                                highlightthickness = 0
-                            )
+                            n = entry3.get().replace('.', '')
 
-                elif entry3.get().count('.') > 1:
+                            if n.isdigit() == False:
+                                entry3.config(
+                                    highlightbackground = 'red',
+                                    highlightthickness = 1
+                                )
+
+                            else:
+                                entry3.config(
+                                    highlightbackground = 'black',
+                                    highlightthickness = 0
+                                )
+
+                    elif entry3.get().count('.') > 1:
+                        entry3.config(
+                            highlightbackground = 'red',
+                            highlightthickness = 1
+                        )
+
+                elif checkbox_gasopt.get() == 0:
                     entry3.config(
-                        highlightbackground = 'red',
-                        highlightthickness = 1
+                        highlightbackground = 'black',
+                        highlightthickness = 0
                     )
 
-            elif checkbox_gasopt.get() == 0:
-                entry3.config(
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-            else:
-                entry3.config(
-                    highlightbackground = 'black',
-                    highlightthickness = 0
-                )
-
-        entry3.register(validgas)
-        entry3.bind('<KeyRelease>', validgas)
-        # END end gas fee
-
-        # Cancel/Continue frame
-        row5 = tk.Frame(master = frame_p)
-        row5.pack(pady = 30)
-
-        btn1 = tk.Button(
-            master = row5,
-            text = 'Cancel',
-            font = 'bold 14',
-            command = lambda: [
-                main.deiconify(),
-                self.destroy()
-            ]
-        )
-
-        btn1.pack(
-            ipady = 7,
-            ipadx = 7,
-            padx = 30,
-            side = 'left'
-        )
-
-        class ConfirmSend(tk.Toplevel):
-            def __init__(self):
-                super().__init__()
-
-                self.rowconf = {
-                    'padx': 22,
-                    'anchor': 'w',
-                    'fill': 'x',
-                    'expand': True,
-                    'pady': 8
-                }
-
-                self.entryconf = {
-                    'font': 'bold 12',
-                    'state': 'readonly',
-                    'width': 41,
-                    'bd': 1,
-                }
-
-                #self.balance          = float(self.user_balance)
-                self.address          = sendcryptowindow.stringentry1.get()
-                self.amount           = stringentry2.get()
-                self.contract          = create_contract(assets_addr[box.current() - 1])
-
-                self.get_symbol     = self.contract.functions.symbol().call()
-                self.get_name       = self.contract.functions.name().call()
-
-                self.final_amount  = 0.0
-
-                if self.amount == 'ALL':
-                    self.amount = sendcryptowindow.sc_val
-
-                self.title('SimpleEtherWallet  -  Verify details')
-                self.resizable(False, False)
-                self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-                center_window(544, 580, self)
-
-                tk.Label(
-                    master = self,
-                    text = '\nVerify send details',
-                    font = 'bold 16'
-                ).pack(pady = 10)
-
-                self.frame = tk.LabelFrame(
-                    master = self,
-                    bd = 4
-                )
-
-                self.frame.pack(
-                    fill = tk.X,
-                    expand = True,
-                    padx = 14,
-                    pady = 30,
-                    anchor = 'n'
-                )
-
-                # Asset
-                self.row1 = tk.Frame(master = self.frame)
-                self.row1.pack(**self.rowconf)
-
-                self.asset_label = tk.Label(
-                    master = self.row1,
-                    text = 'Asset: ',
-                    font = 'bold 12'
-                )
-
-                self.asset_label.pack(
-                    side = 'left',
-                    pady = 4,
-                    ipadx = 9
-                )
-
-                self.avar = StringVar()
-
-                self.assetbox = tk.Entry(
-                    master = self.row1,
-                    textvariable = self.avar,
-                    **self.entryconf
-                )
-
-                self.assetbox.pack(side = 'left')
-
-                if box.current() == 0:
-                    self.avar.set('Ether (ETH)')
-
                 else:
-                    #self.contact = create_contract(assets_addr[box.current() - 1])
+                    entry3.config(
+                        highlightbackground = 'black',
+                        highlightthickness = 0
+                    )
+
+            entry3.register(validgas)
+            entry3.bind('<KeyRelease>', validgas)
+            # END end gas fee
+
+            # Cancel/Continue frame
+            row5 = tk.Frame(master = self.frame_p)
+            row5.pack(pady = 30)
+
+            btn1 = tk.Button(
+                master = row5,
+                text = 'Cancel',
+                font = 'bold 14',
+                command = lambda: [
+                    main.deiconify(),
+                    self.destroy()
+                ]
+            )
+
+            btn1.pack(
+                ipady = 7,
+                ipadx = 7,
+                padx = 30,
+                side = 'left'
+            )
+
+            class ConfirmSend(tk.Toplevel):
+                def __init__(self):
+                    super().__init__()
+
+                    self.rowconf = {
+                        'padx': 22,
+                        'anchor': 'w',
+                        'fill': 'x',
+                        'expand': True,
+                        'pady': 8
+                    }
+
+                    self.entryconf = {
+                        'font': 'bold 12',
+                        'state': 'readonly',
+                        'width': 41,
+                        'bd': 1,
+                    }
+
+                    #self.balance          = float(self.user_balance)
+                    self.address          = stringentry1.get()
+                    self.amount           = stringentry2.get()
+                    self.contract          = create_contract(assets_addr[box.current() - 1])
+
+                    self.get_symbol     = self.contract.functions.symbol().call()
+                    self.get_name       = self.contract.functions.name().call()
+
+                    self.final_amount  = 0.0
+
+                    if self.amount == 'ALL':
+                        self.amount = SendCryptoWindow.sc_val
+
+                    self.title('SimpleEtherWallet  -  Verify details')
+                    self.resizable(False, False)
+                    self.protocol("WM_DELETE_WINDOW", self.destroy)
+
+                    center_window(544, 580, self)
+
+                    tk.Label(
+                        master = self,
+                        text = '\nVerify send details',
+                        font = 'bold 16'
+                    ).pack(pady = 10)
+
+                    self.frame = tk.LabelFrame(
+                        master = self,
+                        bd = 4
+                    )
+
+                    self.frame.pack(
+                        fill = tk.X,
+                        expand = True,
+                        padx = 14,
+                        pady = 30,
+                        anchor = 'n'
+                    )
+
+                    # Asset
+                    self.row1 = tk.Frame(master = self.frame)
+                    self.row1.pack(**self.rowconf)
+
+                    self.asset_label = tk.Label(
+                        master = self.row1,
+                        text = 'Asset: ',
+                        font = 'bold 12'
+                    )
+
+                    self.asset_label.pack(
+                        side = 'left',
+                        pady = 4,
+                        ipadx = 9
+                    )
 
-                    self.avar.set(f'{self.get_name} ({self.get_symbol}) ')
-                    self.assetbox['width'] = len(self.avar.get())
+                    self.avar = StringVar()
 
-                # Address
-                self.row2 = tk.Frame(master = self.frame)
-                self.row2.pack(**self.rowconf)
+                    self.assetbox = tk.Entry(
+                        master = self.row1,
+                        textvariable = self.avar,
+                        **self.entryconf
+                    )
 
-                self.addr = tk.Label(
-                    master = self.row2,
-                    text = "Address: ",
-                    font = 'bold 12'
-                )
+                    self.assetbox.pack(side = 'left')
 
-                self.addr.pack(
-                    side = 'left',
-                    pady = 4
-                )
+                    if box.current() == 0:
+                        self.avar.set('Ether (ETH)')
 
-                self.addrvar = StringVar()
+                    else:
+                        #self.contact = create_contract(assets_addr[box.current() - 1])
 
-                self.addrbox = tk.Entry(
-                    master = self.row2,
-                    textvariable = self.addrvar,
-                    **self.entryconf
-                )
+                        self.avar.set(f'{self.get_name} ({self.get_symbol}) ')
+                        self.assetbox['width'] = len(self.avar.get())
 
-                self.addrbox.pack(side = 'left')
-                self.addrvar.set(self.address)
+                    # Address
+                    self.row2 = tk.Frame(master = self.frame)
+                    self.row2.pack(**self.rowconf)
 
-                # Amount
-                self.row3 = tk.Frame(master = self.frame)
-                self.row3.pack(**self.rowconf)
+                    self.addr = tk.Label(
+                        master = self.row2,
+                        text = "Address: ",
+                        font = 'bold 12'
+                    )
 
-                self.am = tk.Label(
-                    master = self.row3,
-                    text = "Amount: ",
-                    font = 'bold 12'
-                )
+                    self.addr.pack(
+                        side = 'left',
+                        pady = 4
+                    )
 
-                self.am.pack(
-                    side = 'left',
-                    pady = 4,
-                    ipadx = 3
-                )
+                    self.addrvar = StringVar()
 
-                self.amvar = StringVar()
+                    self.addrbox = tk.Entry(
+                        master = self.row2,
+                        textvariable = self.addrvar,
+                        **self.entryconf
+                    )
 
-                self.ambox = tk.Entry(
-                    master = self.row3,
-                    textvariable = self.amvar,
-                    **self.entryconf
-                )
+                    self.addrbox.pack(side = 'left')
+                    self.addrvar.set(self.address)
 
-                self.ambox.pack(side = 'left')
-                self.amvar.set(self.amount)
+                    # Amount
+                    self.row3 = tk.Frame(master = self.frame)
+                    self.row3.pack(**self.rowconf)
 
-                self.ambox['width'] = len(self.amvar.get()) + 1
+                    self.am = tk.Label(
+                        master = self.row3,
+                        text = "Amount: ",
+                        font = 'bold 12'
+                    )
 
-                self.txt = tk.Label(
-                    master = self.row3,
-                    #text = self.contract.functions.symbol().call(),
-                    font = 'bold 12'
-                )
+                    self.am.pack(
+                        side = 'left',
+                        pady = 4,
+                        ipadx = 3
+                    )
 
-                if box.current() == 0:
-                    self.txt['text'] = 'ETH'
+                    self.amvar = StringVar()
 
-                else:
-                    self.txt['text'] = self.contract.functions.symbol().call()
+                    self.ambox = tk.Entry(
+                        master = self.row3,
+                        textvariable = self.amvar,
+                        **self.entryconf
+                    )
 
-                self.txt.pack(side = 'left')
+                    self.ambox.pack(side = 'left')
+                    self.amvar.set(self.amount)
 
+                    self.ambox['width'] = len(self.amvar.get()) + 1
 
-                # Value
-                self.row4 = tk.Frame(master = self.frame)
-                self.row4.pack(**self.rowconf)
+                    self.txt = tk.Label(
+                        master = self.row3,
+                        #text = self.contract.functions.symbol().call(),
+                        font = 'bold 12'
+                    )
 
-                self.val = tk.Label(
-                    master = self.row4,
-                    text = "Value: ",
-                    font = 'bold 12'
-                )
+                    if box.current() == 0:
+                        self.txt['text'] = 'ETH'
 
-                self.val.pack(
-                    side = 'left',
-                    pady = 4,
-                    ipadx = 9
-                )
+                    else:
+                        self.txt['text'] = self.contract.functions.symbol().call()
 
-                self.valvar = StringVar()
+                    self.txt.pack(side = 'left')
 
-                self.valbox = tk.Entry(
-                    master = self.row4,
-                    textvariable = self.valvar,
-                    **self.entryconf
-                )
 
-                self.valbox.pack(side = 'left')
+                    # Value
+                    self.row4 = tk.Frame(master = self.frame)
+                    self.row4.pack(**self.rowconf)
 
-                if self.avar.get() == 'Ether (ETH)':
-                    self.valvar.set(str(fetch_eth_price_in('USDT') * float(self.amount)))
+                    self.val = tk.Label(
+                        master = self.row4,
+                        text = "Value: ",
+                        font = 'bold 12'
+                    )
 
-                else:
-                    self.assetname = self.contract.functions.symbol().call()
-
-                    self.valvar.set(str(fetch_price_of_and_convert_to(self.assetname, 'USDT') * float(self.amount)))
-                    self.valvar.set("{:.12f}".format(float(self.valvar.get())))
-
-                self.valbox['width'] = len(self.valvar.get())
+                    self.val.pack(
+                        side = 'left',
+                        pady = 4,
+                        ipadx = 9
+                    )
 
-                tk.Label(
-                    master = self.row4,
-                    text = '$',
-                    font = 'bold 12'
-                ).pack(side = 'left')
+                    self.valvar = StringVar()
 
+                    self.valbox = tk.Entry(
+                        master = self.row4,
+                        textvariable = self.valvar,
+                        **self.entryconf
+                    )
 
-                # Gas Fee
-                self.row5 = tk.Frame(master = self.frame)
-                self.row5.pack(**self.rowconf)
+                    self.valbox.pack(side = 'left')
 
-                self.gas = tk.Label(
-                    master = self.row5,
-                    text = 'Gas fee: ',
-                    #text = f"Gas fee: {self.gas} USD",
-                    font = 'bold 12'
-                )
+                    if self.avar.get() == 'Ether (ETH)':
+                        self.valvar.set(str(fetch_eth_price_in('USDT') * float(self.amount)))
 
-                self.gas.pack(
-                    side = 'left',
-                    pady = 4,
-                    ipadx = 2
-                )
+                    else:
+                        self.assetname = self.contract.functions.symbol().call()
 
-                self.gasvar = StringVar()
+                        self.priceofasset: float = 0.0
+                        self.priceofasset = fetch_price_of_and_convert_to(self.assetname, 'USDT')
 
-                self.gasbox = tk.Entry(
-                    master = self.row5,
-                    textvariable = self.gasvar,
-                    **self.entryconf
-                )
+                        self.valvar.set(str(self.priceofasset * float(self.amount)))
+                        self.valvar.set("{:.12f}".format(float(self.valvar.get())))
 
-                self.gasbox.pack(side = 'left')
-                #self.gasvar.set(entry3.get())
+                    self.valbox['width'] = len(self.valvar.get())
 
-                #self.gasbox['width'] = len(self.gasvar.get()) + 1
-
-                self.usdlabel5 = tk.Label(
-                    master = self.row5,
-                    text = '',
-                    font = 'bold 12'
-                )
-
-                self.usdlabel5.pack(side = 'left')
-
-                # Priority fee
-                self.row6 = tk.Frame(master = self.frame)
-                self.row6.pack(**self.rowconf)
-
-                self.pfee = tk.Label(
-                    master = self.row6,
-                    text = "Priority: ",
-                    font = 'bold 12'
-                )
-
-                self.pfee.pack(
-                    side = 'left',
-                    pady = 4,
-                    ipadx = 5
-                )
-
-                self.feevar = StringVar()
-
-                self.feebox = tk.Entry(
-                    master = self.row6,
-                    textvariable = self.feevar,
-                    **self.entryconf
-                )
-
-                self.feebox.pack(side = 'left')
-                self.feevar.set(float(entry3.get()) / 2)
-
-                self.feebox['width'] = len(self.feevar.get()) + 1
-
-                tk.Label(
-                    master = self.row6,
-                    text = '$',
-                    font = 'bold 12'
-                ).pack(side = 'left')
-
-                # Total fee
-                self.total = tk.Frame(master = self.frame)
-                self.total.pack(**self.rowconf)
-
-                self.total_label = tk.Label(
-                    master = self.total,
-                    text = '',
-                    font = 'bold 16'
-                )
-
-                self.total_label.pack(
-                    side = 'left',
-                    pady = 14
-                )
-
-                
-                self.final_amount = float(self.valvar.get()) + float(entry3.get())  + float(float(entry3.get()) / 2)
-
-                self.total_label.configure(text = f"Total (in USD): ~{self.final_amount}")
-
-                self.gasineth = float(entry3.get()) / fetch_eth_price_in('USDT')
-
-                ConfirmSend.GAS = self.gasineth
-
-                self.gasinethSTR = str(self.gasineth)[:17]
-
-                #self.usdlabel5.configure(text = f"$  (~{self.gasinethSTR} ETH)")
-                self.usdlabel5.configure(text = f"~{entry3.get()} $")
-                self.gasvar.set(f"{self.gasinethSTR} ETH")
-                self.gasbox['width'] = len(self.gasvar.get())
-
-                ConfirmSend.v = float(entry3.get())
-
-                class FinalizeTransaction(tk.Toplevel):
-                    def __init__(self):
-                        super().__init__()
-                        
-                        self.title('SimpleEtherWallet  -  Verify details')
-                        self.resizable(False, False)
-                        self.protocol("WM_DELETE_WINDOW", quit)
-
-                        center_window(544, 288, self)
-
-                        self.someimg       = PhotoImage(file = imgfolder + 'eth.png')
-
-                        self.closed_eyes  = imgfolder + 'icons8-eyes-24-closed.png'
-                        self.hidepass        = PhotoImage(file = closed_eyes)
-
-                        self.opened_eyes = imgfolder + 'icons8-eyes-24.png'
-                        self.showpass      = PhotoImage(file = opened_eyes)
-
-                        self.opt = IntVar()
-                        self.opt.set(1)
-
-                        self.transaction = {
-                            # From
-                            "from": account.address,
-                            # To
-                            "to": w3.to_checksum_address(sendcryptowindow.stringentry1.get()),
-                            # Value
-                            "value": w3.to_wei(ConfirmSend.v, 'ether'),
-                            # Nounce
-                            'nonce': w3.eth.get_transaction_count(account.address),
-                            # Gas
-                            'gas': 0,
-                            #  Max Gas
-                            'maxFeePerGas': w3.to_wei(ConfirmSend.GAS, 'ether'),
-                            # Miner Tip (priority fee)
-                            'maxPriorityFeePerGas': w3.to_wei(ConfirmSend.GAS / 2, 'ether')
-                        }
-
-                        def unhide():
-                            if self.opt.get() == 1:
-                                self.btn.config(image = self.showpass)
-                                self.passentry.config(show = "")
-
-                                self.opt.set(0)
-
-                            elif self.opt.get() == 0:
-                                self.btn.config(image = self.hidepass)
-                                self.passentry.config(show = "*")
-
-                                self.opt.set(1)
-
-                        self.frm = tk.LabelFrame(master = self)
-                        self.frm.pack(
-                            pady = 20,
-                            padx = 20,
-                            fill = tk.BOTH,
-                            expand = True
-                        )
-
-                        self.frm2 = tk.Frame(master = self.frm)
-                        self.frm2.pack(
-                            pady = 10,
-                            padx = 10
-                        )
-
-                        newline(self.frm2, pady = 4)
-
+                    if self.valvar.get() != 0.0:
                         tk.Label(
-                            master = self.frm2,
-                            text = 'Enter your password to complete the transaction',
-                            font = 'bold 14'
-                        ).pack(pady = 7)
-
-                        self.btn = tk.Button(
-                            master = self.frm2,
-                            image = self.hidepass,
-                            command = unhide
-                        )
-
-                        self.btn.pack(
-                            side = "right",
-                            padx = 10,
-                        )
-
-                        self.password = StringVar()
-
-                        self.passentry = tk.Entry(
-                            master = self.frm2,
-                            bd = 2,
-                            highlightthickness = 1,
-                            exportselection = 0,
-                            width = 40,
-                            show = "*",
-                            textvariable = self.password
-                        )
-
-                        self.passentry.pack(
-                            ipady = 5,
-                            pady = 10,
-                            side = 'right'
-                        )
-
-                        tk.Label(
-                            master = self.frm2,
-                            text = "Password:",
-                            font = 'bold 13'
+                            master = self.row4,
+                            text = '$',
+                            font = 'bold 12'
                         ).pack(side = 'left')
 
-                        self.pkey = type(Account.from_key)
+                    else:
+                        self.valbox.destroy()
 
-                        def checkpass():
-                            if len(self.passentry.get()) == 0:
-                                messagebox.showerror(
-                                    title = "Error",
-                                    message = "Password field is empty"
-                                )
+                        self.valbox = tk.Label(
+                            text = 'Cannot fetch token price (not listed on major exchanges)',
+                            font = 'bold 10',
+                            fg = 'red'
+                        )
 
-                                return
+                        self.valbox.pack(side = 'left')
 
-                            try:
-                                nameofwallet['name'] = conf_file_contents['last']
 
-                                with open(nameofwallet["name"], "r") as f:
-                                    self.pkey = Account.from_key(
-                                        Account.decrypt(
-                                            json.load(f),
-                                            password = self.passentry.get()
-                                        )
+                    # Gas Fee
+                    self.row5 = tk.Frame(master = self.frame)
+                    self.row5.pack(**self.rowconf)
+
+                    self.gas = tk.Label(
+                        master = self.row5,
+                        text = 'Gas fee: ',
+                        #text = f"Gas fee: {self.gas} USD",
+                        font = 'bold 12'
+                    )
+
+                    self.gas.pack(
+                        side = 'left',
+                        pady = 4,
+                        ipadx = 2
+                    )
+
+                    self.gasvar = StringVar()
+
+                    self.gasbox = tk.Entry(
+                        master = self.row5,
+                        textvariable = self.gasvar,
+                        **self.entryconf
+                    )
+
+                    self.gasbox.pack(side = 'left')
+                    #self.gasvar.set(entry3.get())
+
+                    #self.gasbox['width'] = len(self.gasvar.get()) + 1
+
+                    self.usdlabel5 = tk.Label(
+                        master = self.row5,
+                        text = '',
+                        font = 'bold 12'
+                    )
+
+                    self.usdlabel5.pack(side = 'left')
+
+                    # Priority fee
+                    self.row6 = tk.Frame(master = self.frame)
+                    self.row6.pack(**self.rowconf)
+
+                    self.pfee = tk.Label(
+                        master = self.row6,
+                        text = "Priority: ",
+                        font = 'bold 12'
+                    )
+
+                    self.pfee.pack(
+                        side = 'left',
+                        pady = 4,
+                        ipadx = 5
+                    )
+
+                    self.feevar = StringVar()
+
+                    self.feebox = tk.Entry(
+                        master = self.row6,
+                        textvariable = self.feevar,
+                        **self.entryconf
+                    )
+
+                    self.feebox.pack(side = 'left')
+                    self.feevar.set(float(entry3.get()) / 2)
+
+                    self.feebox['width'] = len(self.feevar.get()) + 1
+
+                    tk.Label(
+                        master = self.row6,
+                        text = '$',
+                        font = 'bold 12'
+                    ).pack(side = 'left')
+
+                    # Total fee
+                    self.total = tk.Frame(master = self.frame)
+                    self.total.pack(**self.rowconf)
+
+                    self.total_label = tk.Label(
+                        master = self.total,
+                        text = '',
+                        font = 'bold 16'
+                    )
+
+                    self.total_label.pack(
+                        side = 'left',
+                        pady = 14
+                    )
+
+
+                    self.final_amount = float(self.valvar.get()) + float(entry3.get())  + float(float(entry3.get()) / 2)
+
+                    self.total_label.configure(text = f"Total (in USD): ~{self.final_amount}")
+
+                    self.gasineth = float(entry3.get()) / fetch_eth_price_in('USDT')
+
+                    ConfirmSend.GAS = self.gasineth
+
+                    self.gasinethSTR = str(self.gasineth)[:17]
+
+                    #self.usdlabel5.configure(text = f"$  (~{self.gasinethSTR} ETH)")
+                    self.usdlabel5.configure(text = f"~{entry3.get()} $")
+                    self.gasvar.set(f"{self.gasinethSTR} ETH")
+                    self.gasbox['width'] = len(self.gasvar.get())
+
+                    ConfirmSend.v = float(entry3.get())
+
+                    class FinalizeTransaction(tk.Toplevel):
+                        def __init__(self):
+                            super().__init__()
+
+                            self.title('SimpleEtherWallet  -  Verify details')
+                            self.resizable(False, False)
+                            self.protocol("WM_DELETE_WINDOW", quit)
+
+                            center_window(544, 288, self)
+
+                            self.someimg       = PhotoImage(file = imgfolder + 'eth.png')
+
+                            self.closed_eyes  = imgfolder + 'icons8-eyes-24-closed.png'
+                            self.hidepass        = PhotoImage(file = closed_eyes)
+
+                            self.opened_eyes = imgfolder + 'icons8-eyes-24.png'
+                            self.showpass      = PhotoImage(file = opened_eyes)
+
+                            self.opt = IntVar()
+                            self.opt.set(1)
+
+                            self.transaction = {
+                                # From
+                                "from": account.address,
+                                # To
+                                "to": w3.to_checksum_address(SendCryptoWindow.stringentry1.get()),
+                                # Value
+                                "value": w3.to_wei(ConfirmSend.v, 'ether'),
+                                # Nounce
+                                'nonce': w3.eth.get_transaction_count(account.address),
+                                # Gas
+                                'gas': 0,
+                                #  Max Gas
+                                'maxFeePerGas': w3.to_wei(ConfirmSend.GAS, 'ether'),
+                                # Miner Tip (priority fee)
+                                'maxPriorityFeePerGas': w3.to_wei(ConfirmSend.GAS / 2, 'ether')
+                            }
+
+                            def unhide():
+                                if self.opt.get() == 1:
+                                    self.btn.config(image = self.showpass)
+                                    self.passentry.config(show = "")
+
+                                    self.opt.set(0)
+
+                                elif self.opt.get() == 0:
+                                    self.btn.config(image = self.hidepass)
+                                    self.passentry.config(show = "*")
+
+                                    self.opt.set(1)
+
+                            self.frm = tk.LabelFrame(master = self)
+                            self.frm.pack(
+                                pady = 20,
+                                padx = 20,
+                                fill = tk.BOTH,
+                                expand = True
+                            )
+
+                            self.frm2 = tk.Frame(master = self.frm)
+                            self.frm2.pack(
+                                pady = 10,
+                                padx = 10
+                            )
+
+                            newline(self.frm2, pady = 4)
+
+                            tk.Label(
+                                master = self.frm2,
+                                text = 'Enter your password to complete the transaction',
+                                font = 'bold 14'
+                            ).pack(pady = 7)
+
+                            self.btn = tk.Button(
+                                master = self.frm2,
+                                image = self.hidepass,
+                                command = unhide
+                            )
+
+                            self.btn.pack(
+                                side = "right",
+                                padx = 10,
+                            )
+
+                            self.password = StringVar()
+
+                            self.passentry = tk.Entry(
+                                master = self.frm2,
+                                bd = 2,
+                                highlightthickness = 1,
+                                exportselection = 0,
+                                width = 40,
+                                show = "*",
+                                textvariable = self.password
+                            )
+
+                            self.passentry.pack(
+                                ipady = 5,
+                                pady = 10,
+                                side = 'right'
+                            )
+
+                            tk.Label(
+                                master = self.frm2,
+                                text = "Password:",
+                                font = 'bold 13'
+                            ).pack(side = 'left')
+
+                            self.pkey = type(Account.from_key)
+
+                            def checkpass():
+                                if len(self.passentry.get()) == 0:
+                                    messagebox.showerror(
+                                        title = "Error",
+                                        message = "Password field is empty"
                                     )
 
-                            except ValueError:
-                                messagebox.showerror(
-                                    title = "Error",
-                                    message = "Incorrect password. Try again"
-                                )
+                                    return
 
-                                self.passentry.delete(0, tk.END)
-                                return
+                                try:
+                                    nameofwallet['name'] = conf_file_contents['last']
 
-                            try:
-                                self.gasp = w3.eth.estimate_gas(self.transaction)
-                                self.transaction.update({'gas': self.gasp})
+                                    with open(nameofwallet["name"], "r") as f:
+                                        self.pkey = Account.from_key(
+                                            Account.decrypt(
+                                                json.load(f),
+                                                password = self.passentry.get()
+                                            )
+                                        )
 
-                                self.signed = w3.eth.account.sign_transaction(
-                                    self.transaction,
-                                    self.pkey
-                                )
+                                except ValueError:
+                                    messagebox.showerror(
+                                        title = "Error",
+                                        message = "Incorrect password. Try again"
+                                    )
 
-                                self.tx_hash = w3.eth.send_raw_transaction(self.signed.raw_transaction)
-                                tx = w3.eth.get_transaction(self.tx_hash)
+                                    self.passentry.delete(0, tk.END)
+                                    return
 
-                            except Exception:
-                                messagebox.showerror(
-                                    title = "Error",
-                                    message = "Insufficient funds to complete the transaction"
-                                )
+                                try:
+                                    self.gasp = w3.eth.estimate_gas(self.transaction)
+                                    self.transaction.update({'gas': self.gasp})
 
-                                self.passentry.delete(0, tk.END)
-                                return
+                                    self.signed = w3.eth.account.sign_transaction(
+                                        self.transaction,
+                                        self.pkey
+                                    )
 
-                        self.frm3 = tk.Frame(master = self.frm)
-                        self.frm3.pack(
-                            pady = 20,
-                            anchor = 'n',
-                            side = 'top'
-                        )
+                                    self.tx_hash = w3.eth.send_raw_transaction(self.signed.raw_transaction)
+                                    tx = w3.eth.get_transaction(self.tx_hash)
 
-                        tk.Button(
-                            master = self.frm3,
-                            text = 'Cancel',
-                            font = 'bold 12',
-                            command = self.destroy
-                        ).pack(
-                            side = "left",
-                            padx = 10,
-                            ipady = 4
-                        )
+                                except Exception:
+                                    messagebox.showerror(
+                                        title = "Error",
+                                        message = "Insufficient funds to complete the transaction"
+                                    )
 
-                        tk.Button(
-                            master = self.frm3,
-                            text = "Sign",
-                            font = 'bold 12',
-                            command = checkpass
-                        ).pack(
-                            side = "left",
-                            padx = 10,
-                            ipady = 4
-                        )
+                                    self.passentry.delete(0, tk.END)
+                                    return
 
-                        # END class TransactionPassbox
+                            self.frm3 = tk.Frame(master = self.frm)
+                            self.frm3.pack(
+                                pady = 20,
+                                anchor = 'n',
+                                side = 'top'
+                            )
 
-                tk.Label(
-                    master = self,
-                    text = '',
-                    font = 'bold 14',
-                ).pack(
-                    ipady = 7,
-                    ipadx = 7,
-                    pady = 10,
-                    padx = 50,
-                    side = 'left'
-                )
+                            tk.Button(
+                                master = self.frm3,
+                                text = 'Cancel',
+                                font = 'bold 12',
+                                command = self.destroy
+                            ).pack(
+                                side = "left",
+                                padx = 10,
+                                ipady = 4
+                            )
 
-                tk.Button(
-                    master = self,
-                    text = 'Cancel',
-                    font = 'bold 14',
-                    command = self.destroy
-                ).pack(
-                    ipady = 9,
-                    ipadx = 7,
-                    pady = 15,
-                    side = 'left'
-                )
+                            tk.Button(
+                                master = self.frm3,
+                                text = "Sign",
+                                font = 'bold 12',
+                                command = checkpass
+                            ).pack(
+                                side = "left",
+                                padx = 10,
+                                ipady = 4
+                            )
 
-                tk.Label(
-                    master = self,
-                    text = '',
-                    font = 'bold 14',
-                ).pack(
-                    ipady = 7,
-                    ipadx = 7,
-                    pady = 10,
-                    padx = 40,
-                    side = 'left'
-                )
+                    tk.Label(
+                        master = self,
+                        text = '',
+                        font = 'bold 14',
+                    ).pack(
+                        ipady = 7,
+                        ipadx = 7,
+                        pady = 10,
+                        padx = 50,
+                        side = 'left'
+                    )
 
-                tk.Button(
-                    master = self,
-                    text = 'Confirm',
-                    font = 'bold 14',
-                    command = FinalizeTransaction
-                ).pack(
-                    ipady = 9,
-                    ipadx = 7,
-                    pady = 15,
-                    side = 'left'
-                )
+                    tk.Button(
+                        master = self,
+                        text = 'Cancel',
+                        font = 'bold 14',
+                        command = self.destroy
+                    ).pack(
+                        ipady = 9,
+                        ipadx = 7,
+                        pady = 15,
+                        side = 'left'
+                    )
 
-                #newline(self, pady = 7)
+                    tk.Label(
+                        master = self,
+                        text = '',
+                        font = 'bold 14',
+                    ).pack(
+                        ipady = 7,
+                        ipadx = 7,
+                        pady = 10,
+                        padx = 40,
+                        side = 'left'
+                    )
 
-        def check_send_details():
-            if entry1['highlightbackground'] == 'red' or \
-                entry2['highlightbackground'] == 'red':
+                    tk.Button(
+                        master = self,
+                        text = 'Confirm',
+                        font = 'bold 14',
+                        command = FinalizeTransaction
+                    ).pack(
+                        ipady = 9,
+                        ipadx = 7,
+                        pady = 15,
+                        side = 'left'
+                    )
+
+                    #newline(self, pady = 7)
+
+            def check_send_details():
+                if entry1['highlightbackground'] == 'red' or \
+                    entry2['highlightbackground'] == 'red':
+                        pass
+
+                elif entry3['state'] != 'readonly' and \
+                    entry3['highlightbackground'] == 'red':
+                        pass
+
+                elif len(entry1.get()) == 0 or len(entry2.get()) == 0:
                     pass
 
-            elif entry3['state'] != 'readonly' and \
-                entry3['highlightbackground'] == 'red':
-                    pass
+                else:
+                    ConfirmSend()
 
-            elif len(entry1.get()) == 0 or len(entry2.get()) == 0:
-                pass
+            btn2 = tk.Button(
+                master = row5,
+                text = 'Continue',
+                font = 'bold 14',
+                command = check_send_details
+            )
 
-            else:
-                ConfirmSend()
-
-        btn2 = tk.Button(
-            master = row5,
-            text = 'Continue',
-            font = 'bold 14',
-            command = check_send_details
-        )
-
-        btn2.pack(
-            ipady = 7,
-            ipadx = 7,
-            padx = 30,
-            side = 'left'
-        )
-
-# Send button config
-side_button1.config(command = sendcryptowindow)
-
-def percent(percent, number: int) -> float:
-    if number == 0 or percent == 0:
-        return 0
-
-    return (percent * number) / 100.0
-
-class AssetsLoadingBar (tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-
-        self.title("SimpleEtherWallet  -  Loading assets")
-        self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", quit)
-
-        center_window(330, 170, self)
-
-        tk.Label(
-            master = self,
-            text = '\nLoading your crypto assets...',
-            font = 'bold 16'
-        ).pack(pady = 5)
-
-        self.c = IntVar()
-
-        self.bar = ttk.Progressbar(
-            master = self,
-            orient = 'horizontal',
-            variable = self.c,
-            length = 180,
-            maximum = len(assets_addr)
-        )
-
-        self.bar.pack(
-            pady = 16
-        )
-
-loading = 1
-
-AssetsLoadingBar = AssetsLoadingBar()
-
-def filluplists():
-    total_balance_of_assets = (float(
-        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
-
-    if loading == 1:
-        main.withdraw()
-
-    for i in range(0, len(assets_addr)):
-        contract = create_contract(assets_addr[i])
-
-        token_name_contract    = contract.functions.name()
-        token_name                   = token_name_contract.call()
-
-        token_symbol_contract  = contract.functions.symbol()
-        token_symbol                 = token_symbol_contract.call()
-
-        if os.name == 'nt':
-            asset_list.insert(END, ' ' + token_name + f" ({token_symbol})\n")
-        
-        else:
-            asset_list.insert(END, ' ' + token_name + f" ({token_symbol})")
-
-        token_balance_contract = contract.functions.balanceOf(account.address)
-        token_balance                = token_balance_contract.call()
-
-        if os.name == 'nt':
-            asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')) + '\n')
-            
-        else:
-            asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')))
-
-        if float(token_balance) != 0.0:
-            globals()['total_balance_of_assets'] += float(w3.from_wei(token_balance, 'ether'))
-
-        if loading == 1:
-            AssetsLoadingBar.bar.step(percent(24, len(assets_addr)))
-
-            AssetsLoadingBar.update()
-
-    with open(assets_json, 'w') as f:
-            json.dump(assets_addr, f)
-
-filluplists()
-
-if loading == 1:
-    #AssetsLoadingBar.bar.stop()
-    AssetsLoadingBar.destroy()
-    main.deiconify()
-
-assetbalframe = tk.Frame(master = asset_frame)
-
-assetbalframe.pack(
-    side = 'top',
-    anchor = 'n',
-    pady = 2
-)
-
-tk.Label(
-    master = assetbalframe,
-    text = 'Asset',
-    font = 'bold 13'
-).pack(side = 'left')
-
-tk.Label(
-    master = assetbalframe,
-    text = '      |  ',
-    font = 'bold 13'
-).pack(
-    side = 'left',
-    ipadx = 50,
-    padx = 50,
-    fill = tk.Y,
-    expand = True
-)
-
-tk.Label(
-    master = assetbalframe,
-    text = 'Balance',
-    font = 'bold 13'
-).pack(side = 'left')
-
-sbar.config(command = asset_list.yview)
-
-asset_list.pack(
-    pady = 2,
-    side = 'left',
-    fill = tk.BOTH,
-    expand = True
-)
-
-asset_list2.pack(
-    pady = 2,
-    side = 'right',
-    fill = tk.BOTH,
-    expand = True
-)
-
-newline(main, pady = 1)
-
-# Add/remove coin from list and restore default list
-# BEGIN class CoinFunctions
-class CoinFunctions:
+            btn2.pack(
+                ipady = 7,
+                ipadx = 7,
+                padx = 30,
+                side = 'left'
+            )
 
     # Add a custom cryptocurrency
     class AddCoinWindow(tk.Toplevel):
@@ -4945,10 +4839,10 @@ class CoinFunctions:
             self.protocol("WM_DELETE_WINDOW", quit)
 
             if os.name == 'nt':
-                center_window(490, 410, self)
+                center_window(490, 400, self)
 
             else:
-                center_window(550, 410, self)
+                center_window(550, 390, self)
 
             tk.Label(
                 master = self,
@@ -4962,7 +4856,6 @@ class CoinFunctions:
                 font = 'bold 14'
             ).grid(
                 row = 1,
-                #pady = 10,
                 padx = 24
             )
 
@@ -4992,28 +4885,25 @@ class CoinFunctions:
                     pady = 3
                 )
 
-            self.validaddr = tk.Label(
-                master = self,
-                text = '',
-                font = 'bold 14'
-            )
+            self.validaddr = False
 
-            self.validaddr.grid(
-                row = 3,
-                sticky = 'w',
-                padx = 32,
-                pady = 4
-            )
+            def errb(self):
+                self.errbox = messagebox.showerror(
+                    master = self,
+                    title = "Error",
+                    message = "The address that you have provided is either a wallet address, an invalid token address, or a token that isn't listed on centralized exhanges",
+                    icon = "error"
+                )
+
+                if os.name == 'nt':
+                    self.lift()
 
             def get_data(self, event):
-                if len(self.addressvar.get()) == 0:
-                    self.validaddr.config(text = '')
+                if len(self.addressvar.get()) == 0 or len(self.addressvar.get()) < 42:
+                    pass
 
                 elif not w3.is_address(self.addressvar.get()):
-                    self.validaddr.config(
-                        text = 'Invalid address',
-                        fg = 'red'
-                    )
+                    errb(self)
 
                 elif w3.is_address(self.addressvar.get()):
                     self.addressvar.set(self.address_entry.get())
@@ -5022,27 +4912,19 @@ class CoinFunctions:
                         self.token_name_contract = create_contract(self.addressvar.get()).functions.name()
                         self.token_name = self.token_name_contract.call()
 
-                        self.validaddr.config(
-                            text = 'Valid address',
-                            fg = 'green'
-                        )
-
                     except Exception:
-                        self.validaddr.config(
-                            text = 'Invalid address',
-                            fg = 'red'
-                        )
+                        errb(self)
 
                 else:
-                    self.validaddr.config(text = '')
+                    self.validaddr = True
 
             self.decvar = StringVar()
 
             def get_dec(self, event):
-                if self.validaddr['text'] == 'Invalid address':
+                if self.validaddr == False:
                     self.decvar.set('')
 
-                elif self.validaddr['fg'] == 'green':
+                elif self.validaddr == True:
                     self.decimals_contract = create_contract(self.addressvar.get()).functions.decimals()
                     self.decimals = self.decimals_contract.call()
 
@@ -5104,10 +4986,10 @@ class CoinFunctions:
             )
 
             def get_name(self, event):
-                if self.validaddr['text'] == 'Invalid address':
+                if self.validaddr == False:
                     self.assetname.set('')
 
-                elif self.validaddr['fg'] == 'green':
+                elif self.validaddr == True:
                     self.name_contract = create_contract(self.addressvar.get()).functions.name()
                     self.name = self.name_contract.call()
 
@@ -5144,10 +5026,10 @@ class CoinFunctions:
             )
 
             def get_symbol(self, event):
-                if self.validaddr['text'] == 'Invalid address':
+                if self.validaddr == False:
                     self.symbol.set('')
 
-                elif self.validaddr['fg'] == 'green':
+                elif self.validaddr == True:
                     self.symbol_contract = create_contract(self.addressvar.get()).functions.symbol()
                     self.symbol_name = self.symbol_contract.call()
 
@@ -5167,7 +5049,7 @@ class CoinFunctions:
             )
 
             def add_asset_details():
-                if self.validaddr['text'] == 'Invalid address':
+                if self.validaddr == False:
                     pass
 
                 elif len(self.address_entry.get()) == 0:
@@ -5400,9 +5282,154 @@ class CoinFunctions:
             restore_default_coins_fn(self)
 
             self.destroy()
+
+
 # END    class CoinFunctions
 
 coinfuncts = CoinFunctions()
+
+# Send button config
+side_button1.config(command = coinfuncts.SendCryptoWindow)
+
+def percent(percent, number: int) -> float:
+    if number == 0 or percent == 0:
+        return 0
+
+    return (percent * number) / 100.0
+
+class AssetsLoadingBar (tk.Toplevel):
+    def __init__(self):
+        super().__init__()
+
+        self.title("SimpleEtherWallet  -  Loading assets")
+        self.resizable(False, False)
+        self.protocol("WM_DELETE_WINDOW", quit)
+
+        center_window(330, 170, self)
+
+        tk.Label(
+            master = self,
+            text = '\nLoading your crypto assets...',
+            font = 'bold 16'
+        ).pack(pady = 5)
+
+        self.c = IntVar()
+
+        self.bar = ttk.Progressbar(
+            master = self,
+            orient = 'horizontal',
+            variable = self.c,
+            length = 180,
+            maximum = len(assets_addr)
+        )
+
+        self.bar.pack(
+            pady = 16
+        )
+
+loading = 1
+
+AssetsLoadingBar = AssetsLoadingBar()
+
+def filluplists():
+    total_balance_of_assets = (float(
+        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
+
+    if loading == 1:
+        main.withdraw()
+
+    for i in range(0, len(assets_addr)):
+        contract = create_contract(assets_addr[i])
+
+        token_name_contract    = contract.functions.name()
+        token_name                   = token_name_contract.call()
+
+        token_symbol_contract  = contract.functions.symbol()
+        token_symbol                 = token_symbol_contract.call()
+
+        if os.name == 'nt':
+            asset_list.insert(END, ' ' + token_name + f" ({token_symbol})\n")
+        
+        else:
+            asset_list.insert(END, ' ' + token_name + f" ({token_symbol})")
+
+        token_balance_contract = contract.functions.balanceOf(account.address)
+        token_balance                = token_balance_contract.call()
+
+        if os.name == 'nt':
+            asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')) + '\n')
+            
+        else:
+            asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')))
+
+        if float(token_balance) != 0.0:
+            globals()['total_balance_of_assets'] += float(w3.from_wei(token_balance, 'ether'))
+
+        if loading == 1:
+            AssetsLoadingBar.bar.step(percent(24, len(assets_addr)))
+
+            AssetsLoadingBar.update()
+
+    with open(assets_json, 'w') as f:
+            json.dump(assets_addr, f)
+
+filluplists()
+
+if loading == 1:
+    #AssetsLoadingBar.bar.stop()
+    AssetsLoadingBar.destroy()
+    main.deiconify()
+
+assetbalframe = tk.Frame(master = asset_frame)
+
+assetbalframe.pack(
+    side = 'top',
+    anchor = 'n',
+    pady = 2
+)
+
+tk.Label(
+    master = assetbalframe,
+    text = 'Asset',
+    font = 'bold 13'
+).pack(side = 'left')
+
+tk.Label(
+    master = assetbalframe,
+    text = '      |  ',
+    font = 'bold 13'
+).pack(
+    side = 'left',
+    ipadx = 50,
+    padx = 50,
+    fill = tk.Y,
+    expand = True
+)
+
+tk.Label(
+    master = assetbalframe,
+    text = 'Balance',
+    font = 'bold 13'
+).pack(side = 'left')
+
+sbar.config(command = asset_list.yview)
+
+asset_list.pack(
+    pady = 2,
+    side = 'left',
+    fill = tk.BOTH,
+    expand = True
+)
+
+asset_list2.pack(
+    pady = 2,
+    side = 'right',
+    fill = tk.BOTH,
+    expand = True
+)
+
+newline(main, pady = 1)
+
 
 anotherbtn_frame = tk.Frame(master = main)
 
