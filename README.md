@@ -7,6 +7,7 @@ SimpleEtherWallet is a non-custodial wallet, 100% built in Python, that aims to 
 It operates on the Ethereum mainnet, meaning that all ERC-20 tokens can be sent from/sent to SimpleEtherWallet.
 
 SimpleEtherWallet currently does **not** support connecting to dApps, but this could change in the future.
+SimpleEtherWallet currently does **not** support NFTs, but this could change in the future.
 
 *Benefits of using SimpleEtherWallet*:
 1. Non-custodial. You own your crypto assets. Your private key is stored on your device, and it is also encrypted. Your private key does not leave your device while using SimpleEtherWallet as well.
@@ -16,8 +17,8 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 3. Lightweight. SimpleEtherWallet barely comsumes any resources. It is very light, and easy to run.
     On my Windows 10 laptop that is running hardware that is a few years old, only 52.4 MB of ram is used!
 
-4. You can add any coin that isn't listed on a centralized exhange.
-    Why on centralized exhanges? Well, I use an API that is free. A paid API is something I cannot afford.
+4. You can add any coin that is listed on a centralized exhange.
+    Why centralized exhanges? Well, I use an API that is free, and it only fetches the price from centralized exchanges. A paid API is something that I cannot afford.
  
 5. SimpleEtherWallet runs on both Windows, and Linux!
 
