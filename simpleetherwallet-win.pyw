@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#===Version2.0===#
+#===Version2.0.1===#
 
 # NOTE I'm a Python newbie; the code is messy!!!!
 
@@ -170,77 +170,34 @@ w3 = Web3(
 
 w3.provider.cache_allowed_requests = True
 
-USDT_price:float = 0.0
-USDC_price:float = 0.0
+class PriceData:
+    def __init__(self, From: str, To: str):
+        self.From = From
+        self.To = To
 
-from urllib.request import urlopen
+    def fetchprice(self):
+        from urllib.request import urlopen
+         #https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+        import ssl
 
-page_data = ''
+        context = ssl._create_unverified_context()
 
-try:
-    # Found this link here: https://ethereum.stackexchange.com/questions/38309/what-are-the-popular-api-to-get-current-exchange-rates-for-ethereum-to-usd
-    page_data = urlopen('https://api.coinbase.com/v2/exchange-rates?currency=ETH').read()
+        # A MUCH better API to fetch token price
+        page_data = urlopen(
+            f"https://min-api.cryptocompare.com/data/price?fsym={self.From}&tsyms={self.To}",
+            context=context
+        ).read()
 
-except Exception:
-    pass
+        page = page_data.decode('utf-8')
+        page = page.replace('{"USDT":', '')
+        page = page[:len(page) - 1]
 
-page = page_data.decode('utf-8')
+        if 'Response' in page:
+            return 0.0
 
-def fetch_eth_price_in(coin_symbol) -> float:
-    start = page.find(coin_symbol)
-    end  = page.find(',', start, len(page))
+        return float(page)
 
-    pricedata = page[start:end]
 
-    pricedata = pricedata.replace(":", '')
-    pricedata = pricedata.replace(coin_symbol, '')
-    pricedata = pricedata.replace('"', '')
-
-    return float(pricedata)
-
-""" Old def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to) -> float:
-    page_data2 = ''
-
-    try:
-        # Coin
-        page_data2 = urlopen(f"https://api.coinbase.com/v2/exchange-rates?currency={coin_symbol_base}").read()
-
-    except Exception:
-        pass
-
-    page2 = page_data2.decode('utf-8')
-
-    start = page2.find(coin_symbol_to)
-    end  = page2.find(',', start, len(page2))
-
-    pricedata2 = page2[start:end]
-    pricedata2 = pricedata2.replace(":", '')
-    pricedata2 = pricedata2.replace(coin_symbol_to, '')
-    pricedata2 = pricedata2.replace('"', '')
-
-    return float(pricedata2)
-"""
-
-def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to: str) -> float:
-    #https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
-    import ssl
-
-    context = ssl._create_unverified_context()
-
-    # A MUCH better API to fetch token price
-    page_data2 = urlopen(
-        f"https://min-api.cryptocompare.com/data/price?fsym={coin_symbol_base}&tsyms={coin_symbol_to}",
-        context=context
-    ).read()
-
-    page2 = page_data2.decode('utf-8')
-    page2 = page2.replace('{"USDT":', '')
-    page2 = page2[:len(page2) - 1]
-
-    if 'Response' in page2:
-        return 0.0
-
-    return float(page2)
 
 # TODO: Group these into a class
 class recover_acc(tk.Toplevel):
@@ -3597,7 +3554,8 @@ else:
 asset_list2.insert(END, ' ' + str(w3.from_wei(w3.eth.get_balance(account.address), 'ether')))
 
 total_balance_of_assets = (float(
-    w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
+    w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetchprice())
+#fetch_eth_price_in('USDT'))
 
 def create_contract(address: str):
     return w3.eth.contract(
@@ -4423,15 +4381,13 @@ class CoinFunctions:
                     self.valbox.pack(side = 'left')
 
                     if self.avar.get() == 'Ether (ETH)':
-                        self.valvar.set(str(fetch_eth_price_in('USDT') * float(self.amount)))
+                        self.valvar.set(str(PriceData('ETH', 'USDT').fetch_price()) * float(self.amount)))
 
                     else:
                         self.assetname = self.contract.functions.symbol().call()
 
                         self.priceofasset: float = 0.0
-                        self.priceofasset = fetch_price_of_and_convert_to(self.assetname, 'USDT')
-
-                        self.valvar.set(str(self.priceofasset * float(self.amount)))
+                        self.valvar.set(str(PriceData(self.assetname, 'USDT').fetch_price() * float(self.amount)))
                         self.valvar.set("{:.12f}".format(float(self.valvar.get())))
 
                     self.valbox['width'] = len(self.valvar.get())
@@ -4548,7 +4504,7 @@ class CoinFunctions:
 
                     self.total_label.configure(text = f"Total (in USD): ~{self.final_amount}")
 
-                    self.gasineth = float(entry3.get()) / fetch_eth_price_in('USDT')
+                    self.gasineth = float(entry3.get()) / PriceData('ETH', 'USDT').fetch_price()
 
                     ConfirmSend.GAS = self.gasineth
 
@@ -5333,7 +5289,7 @@ AssetsLoadingBar = AssetsLoadingBar()
 
 def filluplists():
     total_balance_of_assets = (float(
-        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
+        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetch_price()
 
     if loading == 1:
         main.withdraw()
