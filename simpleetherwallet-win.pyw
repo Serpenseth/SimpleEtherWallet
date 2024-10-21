@@ -4381,13 +4381,13 @@ class CoinFunctions:
                     self.valbox.pack(side = 'left')
 
                     if self.avar.get() == 'Ether (ETH)':
-                        self.valvar.set(str(PriceData('ETH', 'USDT').fetch_price()) * float(self.amount)))
+                        self.valvar.set(str(PriceData('ETH', 'USDT').fetchprice()) * float(self.amount))
 
                     else:
                         self.assetname = self.contract.functions.symbol().call()
 
                         self.priceofasset: float = 0.0
-                        self.valvar.set(str(PriceData(self.assetname, 'USDT').fetch_price() * float(self.amount)))
+                        self.valvar.set(str(PriceData(self.assetname, 'USDT').fetchprice() * float(self.amount)))
                         self.valvar.set("{:.12f}".format(float(self.valvar.get())))
 
                     self.valbox['width'] = len(self.valvar.get())
@@ -4504,7 +4504,7 @@ class CoinFunctions:
 
                     self.total_label.configure(text = f"Total (in USD): ~{self.final_amount}")
 
-                    self.gasineth = float(entry3.get()) / PriceData('ETH', 'USDT').fetch_price()
+                    self.gasineth = float(entry3.get()) / PriceData('ETH', 'USDT').fetchprice()
 
                     ConfirmSend.GAS = self.gasineth
 
@@ -5289,7 +5289,7 @@ AssetsLoadingBar = AssetsLoadingBar()
 
 def filluplists():
     total_balance_of_assets = (float(
-        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetch_price()
+        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetchprice())
 
     if loading == 1:
         main.withdraw()
