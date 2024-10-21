@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#===Version2.0.1===#
+#===Version2.0.2===#
 
 # NOTE I'm a Python newbie; the code is messy!!!!
 
@@ -137,15 +137,15 @@ global imgfolder
 
 if os.name == 'nt':
     imgfolder = os.path.dirname(__file__) + '/images/'
-    
+
 else:
     imgfolder = os.path.dirname(__file__) + '/images/'
-    
+
     if not os.path.exists(imgfolder):
         """ messagebox.showerror() will complain that
             it is too early to call it, as there's no root window.
             The ugly solution is to create a Tk() like with no dest_path """
-        
+
         w = tk.Tk()
         w.withdraw()
 
@@ -158,7 +158,7 @@ else:
 
         w.destroy()
         quit()
-    
+
 # default RPC provider
 w3 = Web3(
     Web3.HTTPProvider(
@@ -197,8 +197,6 @@ class PriceData:
 
         return float(page)
 
-
-
 # TODO: Group these into a class
 class recover_acc(tk.Toplevel):
     def __init__(self = Toplevel):
@@ -214,7 +212,7 @@ class recover_acc(tk.Toplevel):
 
         if os.name == 'nt':
             center_window(560, 420, self)
-            
+
         else:
             center_window(620, 420, self)
 
@@ -1393,7 +1391,7 @@ with open(conf_file, 'r') as f:
     if len(contents['wallets']) != 0:
         if os.name == 'nt':
             center_window(720, 400, window)
-        
+
         else:
             center_window(880, 400, window)
 
@@ -1683,7 +1681,7 @@ with open(conf_file, 'r') as f:
     else:
         if os.name == 'nt':
             center_window(540, 520, window)
-            
+
         else:
             center_window(540, 600, window)
 
@@ -1704,7 +1702,7 @@ with open(conf_file, 'r') as f:
             pady = 12,
             padx = 5
         )
-            
+
         txt = tk.Label(
             master = smallframe,
             text = """
@@ -1776,7 +1774,7 @@ main.protocol("WM_DELETE_WINDOW", quit)
 
 if os.name == 'nt':
     center_window(700, 600, main)
-    
+
 
 aboutbar = tk.Menu(master = main)
 
@@ -1785,847 +1783,848 @@ aboutbar_opts = tk.Menu(
     tearoff = 0
 )
 
+# BEGIN class MenuItems
+class MenuItems:
+    # Images
+    class ImageLinks(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-# TODO: Group these into a class
-# Images
-class ImageLinks(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
+            self.resizable(False, False)
+            self.title("SimpleEtherWallet  -  Images")
+            self.protocol("WM_DELETE_WINDOW", self.destroy)
 
-        self.resizable(False, False)
-        self.title("SimpleEtherWallet  -  Images")
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
+            center_window(600, 580, self)
 
-        center_window(600, 580, self)
+            tk.Label(
+                master = self,
+                text = '\nImages',
+                font = 'bold 14'
+            ).pack(pady = 20)
 
-        tk.Label(
-            master = self,
-            text = '\nImages',
-            font = 'bold 14'
-        ).pack(pady = 20)
+            self.frm = tk.Frame(master = self)
+            self.frm.pack(
+                padx = 20,
+                pady = 7
+            )
 
-        self.frm = tk.Frame(master = self)
-        self.frm.pack(
-            padx = 20,
-            pady = 7
-        )
-
-        self.textbox = tk.Text(
-            master = self.frm,
-            font = 'Serif 12',
-            wrap = WORD,
-            height = 20
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Copy icon by Icons8: https://icons8.com/icon/86236/copy\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Cross icon by Icons8: https://icons8.com/icon/42223/cancel\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Plus icon by Icons8: https://icons8.com/icon/42232/plus\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Eye icon by Icons8: https://icons8.com/icon/7tg2iJatDNzj/eyes\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Eye with line icon by Icons8: https://icons8.com/icon/oZFC4NAoTr5c/eyes\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Open book icon by Icons8: https://icons8.com/icon/tgZbSpOhzqyY/open-book\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Forward arrow icon by Icons8: https://icons8.com/icon/117017/forward-arrow\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Back arrow book icon by Icons8: https://icons8.com/icon/117018/reply-arrow\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Refresh icon by Icons8: https://icons8.com/icon/42259/refresh\n\n"
-        )
-
-        self.textbox.insert(
-            tk.END,
-            "Wallet icon by Icons8: https://icons8.com/icon/42316/wallet\n"
-        )
-
-        self.textbox.pack(pady = 8)
-
-        tk.Button(
-            master = self,
-            text = 'Close',
-            font = 'bold 16',
-            command = self.destroy
-        ).pack(
-            pady = 2,
-            ipadx = 14
-        )
-
-        self.textbox.configure(state = 'disabled')
-
-# License class
-class License(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-
-        self.resizable(False, False)
-        self.title("SimpleEtherWallet  -  Credits")
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-        center_window(600, 620, self)
-
-        tk.Label(
-            master = self,
-            text = '\nLicense',
-            font = 'bold 14'
-        ).pack(pady = 20)
-
-        self.frm = tk.Frame(master = self)
-        self.frm.pack(
-            padx = 20,
-            pady = 7
-        )
-
-        self.textbox = tk.Text(
-            master = self.frm,
-            font = 'Serif 12',
-            wrap = WORD,
-        )
-
-        with open(
-            os.path.dirname(__file__) + '/LICENSE.txt', 'r', encoding = 'utf-8') as f:
-            self.text = f.read()
+            self.textbox = tk.Text(
+                master = self.frm,
+                font = 'Serif 12',
+                wrap = WORD,
+                height = 20
+            )
 
             self.textbox.insert(
                 tk.END,
-                self.text
+                "Copy icon by Icons8: https://icons8.com/icon/86236/copy\n\n"
             )
-
-        self.textbox.pack(pady = 8)
-
-        tk.Button(
-            master = self,
-            text = 'Close',
-            font = 'bold 16',
-            command = self.destroy
-        ).pack(
-            pady = 2,
-            ipadx = 14
-        )
-
-        self.textbox.configure(state = 'disabled')
-
-# About wallet
-class AboutWallet(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-
-        self.resizable(False, False)
-        self.title("SimpleEtherWallet  -  About")
-        self.protocol("WM_DELETE_WINDOW", quit)
-
-        center_window(600, 720, self)
-
-        tk.Label(
-            master = self,
-            text = '\nWhat the heck is SimpleEtherWallet?',
-            font = 'bold 14'
-        ).pack(pady = 20)
-
-        self.frm = tk.Frame(master = self)
-        self.frm.pack(
-            padx = 20,
-            pady = 7
-        )
-
-        self.textbox = tk.Text(
-            master = self.frm,
-            font = 'Serif 12',
-            wrap = WORD,
-            height = 30
-        )
-
-        with open(
-            os.path.dirname(__file__) + '/README.md', 'r', encoding = 'utf-8') as f:
-            self.text = f.read()
 
             self.textbox.insert(
                 tk.END,
-                self.text
+                "Cross icon by Icons8: https://icons8.com/icon/42223/cancel\n\n"
             )
 
-        self.textbox.pack(pady = 8)
+            self.textbox.insert(
+                tk.END,
+                "Plus icon by Icons8: https://icons8.com/icon/42232/plus\n\n"
+            )
 
-        tk.Button(
-            master = self,
-            text = 'Close',
-            font = 'bold 16',
-            command = self.destroy
-        ).pack(
-            pady = 2,
-            ipadx = 14
-        )
+            self.textbox.insert(
+                tk.END,
+                "Eye icon by Icons8: https://icons8.com/icon/7tg2iJatDNzj/eyes\n\n"
+            )
 
-        self.textbox.configure(state = 'disabled')
+            self.textbox.insert(
+                tk.END,
+                "Eye with line icon by Icons8: https://icons8.com/icon/oZFC4NAoTr5c/eyes\n\n"
+            )
 
-# Show recovery key
-class ShowRecoveryKey(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
+            self.textbox.insert(
+                tk.END,
+                "Open book icon by Icons8: https://icons8.com/icon/tgZbSpOhzqyY/open-book\n\n"
+            )
 
-        self.resizable(False, False)
-        self.title("SimpleEtherWallet  -  Recovery Key")
-        self.protocol("WM_DELETE_WINDOW", quit)
+            self.textbox.insert(
+                tk.END,
+                "Forward arrow icon by Icons8: https://icons8.com/icon/117017/forward-arrow\n\n"
+            )
 
-        center_window(600, 230, self)
+            self.textbox.insert(
+                tk.END,
+                "Back arrow book icon by Icons8: https://icons8.com/icon/117018/reply-arrow\n\n"
+            )
 
-        tk.Label(
-            master = self,
-            text = '\nPassword required to view your private key',
-            font = 'bold 12'
-        ).pack(pady = 20)
+            self.textbox.insert(
+                tk.END,
+                "Refresh icon by Icons8: https://icons8.com/icon/42259/refresh\n\n"
+            )
 
-        passwdframe = tk.Frame(master = self)
-        passwdframe.pack()
+            self.textbox.insert(
+                tk.END,
+                "Wallet icon by Icons8: https://icons8.com/icon/42316/wallet\n"
+            )
 
-        btn1 = tk.Button(passwdframe)
+            self.textbox.pack(pady = 8)
 
-        btn1.pack(
-            side =  'right',
-            padx = 2
-        )
+            tk.Button(
+                master = self,
+                text = 'Close',
+                font = 'bold 16',
+                command = self.destroy
+            ).pack(
+                pady = 2,
+                ipadx = 14
+            )
 
-        self.passentry = tk.Entry(
-            passwdframe,
-            bd = 3,
-            highlightthickness = 1,
-            exportselection = 0,
-            width = 50,
-            show = "*",
-        )
+            self.textbox.configure(state = 'disabled')
 
-        stat = IntVar()
-        stat.set(1)
+    # License class
+    class License(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-        global closed_eyes
-        global opened_eyes
+            self.resizable(False, False)
+            self.title("SimpleEtherWallet  -  Credits")
+            self.protocol("WM_DELETE_WINDOW", self.destroy)
 
-        closed_eyes  = imgfolder + 'icons8-eyes-24-closed.png'
-        opened_eyes = imgfolder + 'icons8-eyes-24.png'
+            center_window(600, 620, self)
 
-        global showpass
-        global hidepass
+            tk.Label(
+                master = self,
+                text = '\nLicense',
+                font = 'bold 14'
+            ).pack(pady = 20)
 
-        hidepass   = PhotoImage(file = closed_eyes)
-        showpass = PhotoImage(file = opened_eyes)
+            self.frm = tk.Frame(master = self)
+            self.frm.pack(
+                padx = 20,
+                pady = 7
+            )
 
-        def unhide():
-            if stat.get() == 1:
-                btn1.config(image = showpass)
-                self.passentry.config(show = "")
+            self.textbox = tk.Text(
+                master = self.frm,
+                font = 'Serif 12',
+                wrap = WORD,
+            )
 
-                stat.set(0)
+            with open(
+                os.path.dirname(__file__) + '/LICENSE.txt', 'r', encoding = 'utf-8') as f:
+                self.text = f.read()
 
-            elif stat.get() == 0:
-                btn1.config(image = hidepass)
-                self.passentry.config(show = "*")
+                self.textbox.insert(
+                    tk.END,
+                    self.text
+                )
 
-                stat.set(1)
+            self.textbox.pack(pady = 8)
 
-        btn1.configure(
-            image = hidepass,
-            command = unhide
-        )
+            tk.Button(
+                master = self,
+                text = 'Close',
+                font = 'bold 16',
+                command = self.destroy
+            ).pack(
+                pady = 2,
+                ipadx = 14
+            )
 
-        tk.Label(
-            master = passwdframe,
-            text = "Password:",
-            font = 'bold 12'
-        ).pack(
-            side = 'left',
-            padx = 2,
-        )
+            self.textbox.configure(state = 'disabled')
 
-        self.passentry.pack(
-            ipady = 5,
-            #fill = tk.X,
-            #expand = True,
-            padx = 10,
-            side = 'right',
-            pady = 4
-        )
+    # About wallet
+    class AboutWallet(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-        passwdframe.pack(
-            pady = 5,
-        )
+            self.resizable(False, False)
+            self.title("SimpleEtherWallet  -  About")
+            self.protocol("WM_DELETE_WINDOW", quit)
 
-        class DisplayPrivateKey(tk.Toplevel):
-            def __init__(self):
-                super().__init__()
+            center_window(600, 720, self)
 
-                self.resizable(False, False)
-                self.title("SimpleEtherWallet  -  Recovery Key")
-                
-                def rm_p():
-                    try:
-                        os.remove("p.png")
+            tk.Label(
+                master = self,
+                text = '\nWhat the heck is SimpleEtherWallet?',
+                font = 'bold 14'
+            ).pack(pady = 20)
 
-                    except Exception:
+            self.frm = tk.Frame(master = self)
+            self.frm.pack(
+                padx = 20,
+                pady = 7
+            )
+
+            self.textbox = tk.Text(
+                master = self.frm,
+                font = 'Serif 12',
+                wrap = WORD,
+                height = 30
+            )
+
+            with open(
+                os.path.dirname(__file__) + '/README.md', 'r', encoding = 'utf-8') as f:
+                self.text = f.read()
+
+                self.textbox.insert(
+                    tk.END,
+                    self.text
+                )
+
+            self.textbox.pack(pady = 8)
+
+            tk.Button(
+                master = self,
+                text = 'Close',
+                font = 'bold 16',
+                command = self.destroy
+            ).pack(
+                pady = 2,
+                ipadx = 14
+            )
+
+            self.textbox.configure(state = 'disabled')
+
+    # Show recovery key
+    class ShowRecoveryKey(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
+
+            self.resizable(False, False)
+            self.title("SimpleEtherWallet  -  Recovery Key")
+            self.protocol("WM_DELETE_WINDOW", quit)
+
+            center_window(600, 230, self)
+
+            tk.Label(
+                master = self,
+                text = '\nPassword required to view your private key',
+                font = 'bold 12'
+            ).pack(pady = 20)
+
+            passwdframe = tk.Frame(master = self)
+            passwdframe.pack()
+
+            btn1 = tk.Button(passwdframe)
+
+            btn1.pack(
+                side =  'right',
+                padx = 2
+            )
+
+            self.passentry = tk.Entry(
+                passwdframe,
+                bd = 3,
+                highlightthickness = 1,
+                exportselection = 0,
+                width = 50,
+                show = "*",
+            )
+
+            stat = IntVar()
+            stat.set(1)
+
+            global closed_eyes
+            global opened_eyes
+
+            closed_eyes  = imgfolder + 'icons8-eyes-24-closed.png'
+            opened_eyes = imgfolder + 'icons8-eyes-24.png'
+
+            global showpass
+            global hidepass
+
+            hidepass   = PhotoImage(file = closed_eyes)
+            showpass = PhotoImage(file = opened_eyes)
+
+            def unhide():
+                if stat.get() == 1:
+                    btn1.config(image = showpass)
+                    self.passentry.config(show = "")
+
+                    stat.set(0)
+
+                elif stat.get() == 0:
+                    btn1.config(image = hidepass)
+                    self.passentry.config(show = "*")
+
+                    stat.set(1)
+
+            btn1.configure(
+                image = hidepass,
+                command = unhide
+            )
+
+            tk.Label(
+                master = passwdframe,
+                text = "Password:",
+                font = 'bold 12'
+            ).pack(
+                side = 'left',
+                padx = 2,
+            )
+
+            self.passentry.pack(
+                ipady = 5,
+                #fill = tk.X,
+                #expand = True,
+                padx = 10,
+                side = 'right',
+                pady = 4
+            )
+
+            passwdframe.pack(
+                pady = 5,
+            )
+
+            class DisplayPrivateKey(tk.Toplevel):
+                def __init__(self):
+                    super().__init__()
+
+                    self.resizable(False, False)
+                    self.title("SimpleEtherWallet  -  Recovery Key")
+
+                    def rm_p():
+                        try:
+                            os.remove("p.png")
+
+                        except Exception:
+                            return
+
                         return
+
+                    self.protocol(
+                        "WM_DELETE_WINDOW",
+                        lambda: \
+                        [
+                            rm_p(),
+                            self.destroy()
+                        ]
+                    )
+
+                    if os.name == 'nt':
+                        center_window(620, 570, self)
+
+                    else:
+                        center_window(700, 570, self)
+
+                    tk.Label(
+                        master = self,
+                        text = '\nKeep your private key safe!',
+                        font = 'bold 22'
+                    ).pack(pady = 10)
+
+                    qrcode = segno.make_qr(w3.to_hex(account.key))
+                    qrcode.save(
+                        "p.png",
+                        scale = 8,
+                        border = 1
+                    )
+
+                    self.f_img = type(PhotoImage)
+                    self.f_img =  PhotoImage(file = "p.png")
+
+                    tk.Label(
+                        master = self,
+                        image = self.f_img,
+                        relief = 'groove',
+                        bd = 4
+                    ).pack(pady = 10)
+
+                    self.pkey = StringVar()
+
+                    self.t = tk.Entry(
+                        master = self,
+                        exportselection = False,
+                        highlightthickness = 0,
+                        font = 'bold 12',
+                        relief = 'flat',
+                        width = 64,
+                        textvariable = self.pkey
+                    )
+
+                    self.pkey.set(w3.to_hex(account.key))
+                    self.t.pack(
+                        pady = 20,
+                        ipady = 4,
+                        padx = 4
+                    )
+
+                    self.t.configure(state = 'readonly')
+
+                    global clipboardimg
+
+                    self.clipboardimg = PhotoImage(file = imgfolder + 'icons8-copy-24.png')
+
+                    tk.Label(
+                        master = self,
+                        text = '',
+                    ).pack(
+                        side = 'left',
+                        ipadx = 50
+                    )
+
+                    tk.Button(
+                        master = self,
+                        text = 'Close',
+                        font = 'bold 12',
+                        command = self.destroy
+                    ).pack(
+                        ipadx = 12,
+                        ipady = 7,
+                        side = 'left',
+                        padx = 70
+                    )
+
+                    tk.Button(
+                        master = self,
+                        text = "Copy Address",
+                        font = 'bold 12',
+                        image = self.clipboardimg,
+                        compound = "left",
+                        command = lambda: \
+                        [
+                            self.clipboard_clear(),
+                            self.clipboard_append(self.pkey.get()),
+
+                            messagebox.showinfo(
+                                master = self,
+                                title = "SimpleEtherWallet",
+                                message = "Private key copied to clipboard"
+                            ),
+
+                            self.destroy()
+                        ]
+                    ).pack(
+                        side = "left",
+                        padx = 20,
+                        ipady = 7,
+                        ipadx = 7
+                    )
+
+            def checkpasswd(*args):
+                if len(self.passentry.get()) == 0:
+
+                    if os.name == 'nt':
+                        self.lift()
+
+                    messagebox.showerror(
+                        title = "Error",
+                        message = "Password field is empty"
+                    )
 
                     return
 
-                self.protocol(
-                    "WM_DELETE_WINDOW",
-                    lambda: \
-                    [
-                        rm_p(),
-                        self.destroy()
-                    ]
-                )
-
-                if os.name == 'nt': 
-                    center_window(620, 570, self)
-                    
-                else:
-                    center_window(700, 570, self)
-
-                tk.Label(
-                    master = self,
-                    text = '\nKeep your private key safe!',
-                    font = 'bold 22'
-                ).pack(pady = 10)
-
-                qrcode = segno.make_qr(w3.to_hex(account.key))
-                qrcode.save(
-                    "p.png",
-                    scale = 8,
-                    border = 1
-                )
-
-                self.f_img = type(PhotoImage)
-                self.f_img =  PhotoImage(file = "p.png")
-
-                tk.Label(
-                    master = self,
-                    image = self.f_img,
-                    relief = 'groove',
-                    bd = 4
-                ).pack(pady = 10)
-
-                self.pkey = StringVar()
-
-                self.t = tk.Entry(
-                    master = self,
-                    exportselection = False,
-                    highlightthickness = 0,
-                    font = 'bold 12',
-                    relief = 'flat',
-                    width = 64,
-                    textvariable = self.pkey
-                )
-
-                self.pkey.set(w3.to_hex(account.key))
-                self.t.pack(
-                    pady = 20,
-                    ipady = 4,
-                    padx = 4
-                )
-
-                self.t.configure(state = 'readonly')
-
-                global clipboardimg
-
-                self.clipboardimg = PhotoImage(file = imgfolder + 'icons8-copy-24.png')
-
-                tk.Label(
-                    master = self,
-                    text = '',
-                ).pack(
-                    side = 'left',
-                    ipadx = 50
-                )
-
-                tk.Button(
-                    master = self,
-                    text = 'Close',
-                    font = 'bold 12',
-                    command = self.destroy
-                ).pack(
-                    ipadx = 12,
-                    ipady = 7,
-                    side = 'left',
-                    padx = 70
-                )
-
-                tk.Button(
-                    master = self,
-                    text = "Copy Address",
-                    font = 'bold 12',
-                    image = self.clipboardimg,
-                    compound = "left",
-                    command = lambda: \
-                    [
-                        self.clipboard_clear(),
-                        self.clipboard_append(self.pkey.get()),
-
-                        messagebox.showinfo(
-                            master = self,
-                            title = "SimpleEtherWallet",
-                            message = "Private key copied to clipboard"
-                        ),
-
-                        self.destroy()
-                    ]
-                ).pack(
-                    side = "left",
-                    padx = 20,
-                    ipady = 7,
-                    ipadx = 7
-                )
-
-        def checkpasswd(*args):
-            if len(self.passentry.get()) == 0:
-                
-                if os.name == 'nt':
-                    self.lift()
-                    
-                messagebox.showerror(
-                    title = "Error",
-                    message = "Password field is empty"
-                )
-                
-                return
-
-            try:
-                with open(selectedwallet.get(), 'r') as f:
-                    useless = Account.from_key(
-                        Account.decrypt(
-                            json.load(f),
-                            password = self.passentry.get()
+                try:
+                    with open(selectedwallet.get(), 'r') as f:
+                        useless = Account.from_key(
+                            Account.decrypt(
+                                json.load(f),
+                                password = self.passentry.get()
+                            )
                         )
+
+                    self.destroy()
+                    DisplayPrivateKey()
+
+                except ValueError:
+                    messagebox.showerror(
+                        title = "Error",
+                        message = "Incorrect password. Try again"
                     )
 
-                self.destroy()
-                DisplayPrivateKey()
+                    self.passentry.delete(0, tk.END)
 
-            except ValueError:
-                messagebox.showerror(
-                    title = "Error",
-                    message = "Incorrect password. Try again"
-                )
+                    self.lift()
+                    return
 
-                self.passentry.delete(0, tk.END)
+            self.passentry.bind('<Return>', lambda e: checkpasswd(e))
 
-                self.lift()
+            tk.Button(
+                master = self,
+                text = 'Cancel',
+                font = 'bold 12',
+                command = self.destroy
+            ).pack(
+                ipadx = 7,
+                ipady = 3,
+                padx = 70,
+                side = 'left'
+            )
+
+            tk.Button(
+                master = self,
+                text = 'Show private key',
+                font = 'bold 12',
+                command = checkpasswd
+            ).pack(
+                ipadx = 7,
+                ipady = 3,
+                padx = 70,
+                side = 'right'
+            )
+
+    # Donate ETH
+    class DonateEther(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
+
+            self.resizable(False, False)
+            self.title("SimpleEtherWallet  -  Donate")
+
+            def rm_p():
+                try:
+                    os.remove("p.png")
+
+                except Exception:
+                    return
+
                 return
 
-        self.passentry.bind('<Return>', lambda e: checkpasswd(e))
+            self.protocol(
+                "WM_DELETE_WINDOW",
+                lambda: \
+                [
+                    rm_p(),
+                    self.destroy()
+                ]
+            )
 
-        tk.Button(
-            master = self,
-            text = 'Cancel',
-            font = 'bold 12',
-            command = self.destroy
-        ).pack(
-            ipadx = 7,
-            ipady = 3,
-            padx = 70,
-            side = 'left'
-        )
+            center_window(680, 710, self)
 
-        tk.Button(
-            master = self,
-            text = 'Show private key',
-            font = 'bold 12',
-            command = checkpasswd
-        ).pack(
-            ipadx = 7,
-            ipady = 3,
-            padx = 70,
-            side = 'right'
-        )
+            tk.Label(
+                master = self,
+                text = '\nDonate',
+                font = 'bold 12'
+            ).pack(pady = 10)
 
-# Donate ETH
-class DonateEther(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
+            self.donomsgframe = tk.LabelFrame(
+                master = self,
+                bd = 3
+            )
 
-        self.resizable(False, False)
-        self.title("SimpleEtherWallet  -  Donate")
+            self.donomsgframe.pack(
+                pady = 20,
+                padx = 30,
+                side = 'top'
+            )
 
-        def rm_p():
+            tk.Label(
+                master = self.donomsgframe,
+                text = "I have made this program with care, and have dedicated a lot of time, and effort, into creating SimpleEtherWallet.\n\n" "Donations are not required, of course! They are a personal decision.\n"
+                "If, you wish to send me a crypto asset in another blockchain, click 'Send via another blockchain. Thank you!!!!'",
+                font = 'bold 12',
+                wrap = 525
+            ).pack(
+                padx = 40,
+                pady = 20
+            )
+
+            qrcode = segno.make_qr('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
+            qrcode.save(
+                "p.png",
+                scale = 8,
+                border = 1
+            )
+
+            self.f_img = type(PhotoImage)
+            self.f_img =  PhotoImage(file = "p.png")
+
+            tk.Label(
+                master = self,
+                image = self.f_img,
+                relief = 'groove',
+                bd = 4
+            ).pack(pady = 10)
+
+            self.addr = StringVar()
+
+            self.t = tk.Entry(
+                master = self,
+                exportselection = False,
+                highlightthickness = 0,
+                font = 'bold 12',
+                relief = 'flat',
+                width = 64,
+                textvariable = self.addr
+            )
+
+            self.addr.set('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
+            self.t.pack(
+                ipady = 4,
+                padx = 140
+            )
+
+            self.t.configure(state = 'readonly')
+
+            global clipboardimg
+
+            self.clipboardimg = PhotoImage(file = imgfolder + 'icons8-copy-24.png')
+
+            tk.Label(
+                master = self,
+                text = ' '
+            ).pack(
+                padx = 20,
+                side = 'left'
+            )
+
+            tk.Button(
+                master = self,
+                text = 'Close',
+                font = 'bold 12',
+                command = self.destroy
+            ).pack(
+                ipadx = 18,
+                ipady = 7,
+                side = 'left',
+                padx = 20,
+                pady = 40
+            )
+
             try:
                 os.remove("p.png")
 
             except Exception:
-                return
+                pass
 
-            return
+            class AnotherBlockchain(tk.Toplevel):
+                def __init__(self):
+                    super().__init__()
 
-        self.protocol(
-            "WM_DELETE_WINDOW",
-            lambda: \
-            [
-                rm_p(),
-                self.destroy()
-            ]
-        )
+                    self.resizable(False, False)
+                    self.title("SimpleEtherWallet  -  Donate")
 
-        center_window(680, 710, self)
+                    center_window(610, 340, self)
 
-        tk.Label(
-            master = self,
-            text = '\nDonate',
-            font = 'bold 12'
-        ).pack(pady = 10)
+                    newline(self, pady = 8)
 
-        self.donomsgframe = tk.LabelFrame(
-            master = self,
-            bd = 3
-        )
+                    self.eopts = {
+                        'font': 'bold 12',
+                        'width': 44,
+                        'state': 'readonly'
+                    }
 
-        self.donomsgframe.pack(
-            pady = 20,
-            padx = 30,
-            side = 'top'
-        )
+                    """ BTC """
+                    self.row1 = tk.Frame(master = self)
+                    self.row1.pack(
+                        padx = 20,
+                        pady = 10
+                    )
 
-        tk.Label(
-            master = self.donomsgframe,
-            text = "I have made this program with care, and have dedicated a lot of time, and effort, into creating SimpleEtherWallet.\n\n" "Donations are not required, of course! They are a personal decision.\n"
-            "If, you wish to send me a crypto asset in another blockchain, click 'Send via another blockchain. Thank you!!!!'",
-            font = 'bold 12',
-            wrap = 525
-        ).pack(
-            padx = 40,
-            pady = 20
-        )
+                    tk.Label(
+                        master = self.row1,
+                        text = 'BTC:',
+                        font = 'bold 12',
+                    ).pack(
+                        padx = 10,
+                        side = 'left'
+                    )
 
-        qrcode = segno.make_qr('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
-        qrcode.save(
-            "p.png",
-            scale = 8,
-            border = 1
-        )
+                    self.btcaddr = StringVar()
 
-        self.f_img = type(PhotoImage)
-        self.f_img =  PhotoImage(file = "p.png")
+                    self.e1 = tk.Entry(
+                        **self.eopts,
+                        master = self.row1,
+                        textvariable = self.btcaddr
+                    )
 
-        tk.Label(
-            master = self,
-            image = self.f_img,
-            relief = 'groove',
-            bd = 4
-        ).pack(pady = 10)
+                    self.e1.pack(
+                        padx = 2,
+                    )
 
-        self.addr = StringVar()
-
-        self.t = tk.Entry(
-            master = self,
-            exportselection = False,
-            highlightthickness = 0,
-            font = 'bold 12',
-            relief = 'flat',
-            width = 64,
-            textvariable = self.addr
-        )
-
-        self.addr.set('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
-        self.t.pack(
-            ipady = 4,
-            padx = 140
-        )
-
-        self.t.configure(state = 'readonly')
-
-        global clipboardimg
-
-        self.clipboardimg = PhotoImage(file = imgfolder + 'icons8-copy-24.png')
-
-        tk.Label(
-            master = self,
-            text = ' '
-        ).pack(
-            padx = 20,
-            side = 'left'
-        )
-
-        tk.Button(
-            master = self,
-            text = 'Close',
-            font = 'bold 12',
-            command = self.destroy
-        ).pack(
-            ipadx = 18,
-            ipady = 7,
-            side = 'left',
-            padx = 20,
-            pady = 40
-        )
-        
-        try:
-            os.remove("p.png")
-
-        except Exception:
-            pass
-
-        class AnotherBlockchain(tk.Toplevel):
-            def __init__(self):
-                super().__init__()
-
-                self.resizable(False, False)
-                self.title("SimpleEtherWallet  -  Donate")
-
-                center_window(610, 340, self)
-
-                newline(self, pady = 8)
-
-                self.eopts = {
-                    'font': 'bold 12',
-                    'width': 44,
-                    'state': 'readonly'
-                }
-
-                """ BTC """
-                self.row1 = tk.Frame(master = self)
-                self.row1.pack(
-                    padx = 20,
-                    pady = 10
-                )
-
-                tk.Label(
-                    master = self.row1,
-                    text = 'BTC:',
-                    font = 'bold 12',
-                ).pack(
-                    padx = 10,
-                    side = 'left'
-                )
-
-                self.btcaddr = StringVar()
-
-                self.e1 = tk.Entry(
-                    **self.eopts,
-                    master = self.row1,
-                    textvariable = self.btcaddr
-                )
-
-                self.e1.pack(
-                    padx = 2,
-                )
-
-                self.btcaddr.set('bc1q0twjllj6wae3uxawe6h4yunzww7evp9r5l9hpy')
+                    self.btcaddr.set('bc1q0twjllj6wae3uxawe6h4yunzww7evp9r5l9hpy')
 
 
-                """ ARB """
-                self.row2 = tk.Frame(master = self)
-                self.row2.pack(
-                    padx = 20,
-                    pady = 10
-                )
+                    """ ARB """
+                    self.row2 = tk.Frame(master = self)
+                    self.row2.pack(
+                        padx = 20,
+                        pady = 10
+                    )
 
-                tk.Label(
-                    master = self.row2,
-                    text = 'ARB:',
-                    font = 'bold 12',
-                ).pack(
-                    padx = 10,
-                    side = 'left'
-                )
+                    tk.Label(
+                        master = self.row2,
+                        text = 'ARB:',
+                        font = 'bold 12',
+                    ).pack(
+                        padx = 10,
+                        side = 'left'
+                    )
 
-                self.arbaddr = StringVar()
+                    self.arbaddr = StringVar()
 
-                self.e2 = tk.Entry(
-                    **self.eopts,
-                    master = self.row2,
-                    textvariable = self.arbaddr
-                )
+                    self.e2 = tk.Entry(
+                        **self.eopts,
+                        master = self.row2,
+                        textvariable = self.arbaddr
+                    )
 
-                self.e2.pack(
-                    padx = 2,
-                )
+                    self.e2.pack(
+                        padx = 2,
+                    )
 
-                self.arbaddr.set('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
+                    self.arbaddr.set('0x508547c4Bac880C1f4A2336E39C55AB520d43F59')
 
-                """ ETC """
-                self.row3 = tk.Frame(master = self)
-                self.row3.pack(
-                    padx = 20,
-                    pady = 10
-                )
+                    """ ETC """
+                    self.row3 = tk.Frame(master = self)
+                    self.row3.pack(
+                        padx = 20,
+                        pady = 10
+                    )
 
-                tk.Label(
-                    master = self.row3,
-                    text = 'ETC:',
-                    font = 'bold 12',
-                ).pack(
-                    padx = 10,
-                    side = 'left'
-                )
+                    tk.Label(
+                        master = self.row3,
+                        text = 'ETC:',
+                        font = 'bold 12',
+                    ).pack(
+                        padx = 10,
+                        side = 'left'
+                    )
 
-                self.etcaddr = StringVar()
+                    self.etcaddr = StringVar()
 
-                self.e3 = tk.Entry(
-                    **self.eopts,
-                    master = self.row3,
-                    textvariable = self.etcaddr
-                )
+                    self.e3 = tk.Entry(
+                        **self.eopts,
+                        master = self.row3,
+                        textvariable = self.etcaddr
+                    )
 
-                self.e3.pack(
-                    padx = 2,
-                )
+                    self.e3.pack(
+                        padx = 2,
+                    )
 
-                self.etcaddr.set('0x7a37a759bec9eD277c113F44Be86DbbFb3707eCe')
+                    self.etcaddr.set('0x7a37a759bec9eD277c113F44Be86DbbFb3707eCe')
 
-                """ SOL """
-                self.row4 = tk.Frame(master = self)
-                self.row4.pack(
-                    padx = 20,
-                    pady = 10
-                )
+                    """ SOL """
+                    self.row4 = tk.Frame(master = self)
+                    self.row4.pack(
+                        padx = 20,
+                        pady = 10
+                    )
 
-                tk.Label(
-                    master = self.row4,
-                    text = 'SOL:',
-                    font = 'bold 12',
-                ).pack(
-                    padx = 10,
-                    side = 'left'
-                )
+                    tk.Label(
+                        master = self.row4,
+                        text = 'SOL:',
+                        font = 'bold 12',
+                    ).pack(
+                        padx = 10,
+                        side = 'left'
+                    )
 
-                self.soladdr = StringVar()
+                    self.soladdr = StringVar()
 
-                self.e4 = tk.Entry(
-                    **self.eopts,
-                    master = self.row4,
-                    textvariable = self.soladdr
-                )
+                    self.e4 = tk.Entry(
+                        **self.eopts,
+                        master = self.row4,
+                        textvariable = self.soladdr
+                    )
 
-                self.e4.pack(
-                    padx = 2,
-                )
+                    self.e4.pack(
+                        padx = 2,
+                    )
 
-                self.soladdr.set('8TrSGinmesMxQQCJL4eMKP6AfYcbtpiXktpiRtjaG4eQ')
+                    self.soladdr.set('8TrSGinmesMxQQCJL4eMKP6AfYcbtpiXktpiRtjaG4eQ')
 
-                """ TRC-20 """
-                self.row5 = tk.Frame(master = self)
-                self.row5.pack(
-                    padx = 20,
-                    pady = 10
-                )
+                    """ TRC-20 """
+                    self.row5 = tk.Frame(master = self)
+                    self.row5.pack(
+                        padx = 20,
+                        pady = 10
+                    )
 
-                tk.Label(
-                    master = self.row5,
-                    text = 'TRX:',
-                    font = 'bold 12',
-                ).pack(
-                    padx = 10,
-                    side = 'left'
-                )
+                    tk.Label(
+                        master = self.row5,
+                        text = 'TRX:',
+                        font = 'bold 12',
+                    ).pack(
+                        padx = 10,
+                        side = 'left'
+                    )
 
-                self.trxaddr = StringVar()
+                    self.trxaddr = StringVar()
 
-                self.e5 = tk.Entry(
-                    **self.eopts,
-                    master = self.row5,
-                    textvariable = self.trxaddr
-                )
+                    self.e5 = tk.Entry(
+                        **self.eopts,
+                        master = self.row5,
+                        textvariable = self.trxaddr
+                    )
 
-                self.e5.pack(
-                    padx = 2,
-                )
+                    self.e5.pack(
+                        padx = 2,
+                    )
 
-                self.trxaddr.set('TJyonFv58FKedY7tryztppuGLKhpZRUHH9')
+                    self.trxaddr.set('TJyonFv58FKedY7tryztppuGLKhpZRUHH9')
 
-        tk.Button(
-            master = self,
-            text = 'Send via another blockchain',
-            font = 'bold 12',
-            command = AnotherBlockchain
-        ).pack(
-            side = 'left',
-            ipadx = 25,
-            ipady = 7,
-            pady = 40
-        )
+            tk.Button(
+                master = self,
+                text = 'Send via another blockchain',
+                font = 'bold 12',
+                command = AnotherBlockchain
+            ).pack(
+                side = 'left',
+                ipadx = 25,
+                ipady = 7,
+                pady = 40
+            )
 
-        tk.Button(
-            master = self,
-            text = "Copy Address",
-            font = 'bold 12',
-            image = self.clipboardimg,
-            compound = "left",
-            command = lambda: \
-            [
-                #self.lift(),
-                self.clipboard_clear(),
-                self.clipboard_append(self.addr.get()),
+            tk.Button(
+                master = self,
+                text = "Copy Address",
+                font = 'bold 12',
+                image = self.clipboardimg,
+                compound = "left",
+                command = lambda: \
+                [
+                    #self.lift(),
+                    self.clipboard_clear(),
+                    self.clipboard_append(self.addr.get()),
 
-                messagebox.showinfo(
-                    master = self,
-                    title = "SimpleEtherWallet",
-                    message = "Address copied to clipboard"
-                ),
+                    messagebox.showinfo(
+                        master = self,
+                        title = "SimpleEtherWallet",
+                        message = "Address copied to clipboard"
+                    ),
 
-                self.destroy()
-            ]
-        ).pack(
-            side = "left",
-            padx = 20,
-            ipady = 7,
-            ipadx = 7,
-            pady = 40
-        )
-
+                    self.destroy()
+                ]
+            ).pack(
+                side = "left",
+                padx = 20,
+                ipady = 7,
+                ipadx = 7,
+                pady = 40
+            )
+# END class MenuItems
 
 aboutbar_opts.add_command(
     label = 'License',
-    command = License
+    command = MenuItems.License
 )
+
 
 aboutbar_opts.add_command(
     label = 'Images',
-    command = ImageLinks
+    command = MenuItems.ImageLinks
 )
 
 aboutbar_opts.add_separator()
 
 aboutbar_opts.add_command(
     label = 'Show Private Key',
-    command = ShowRecoveryKey
+    command = MenuItems.ShowRecoveryKey
 )
 
 aboutbar_opts.add_separator()
 
 aboutbar_opts.add_command(
     label = 'Donate',
-    command = DonateEther
+    command = MenuItems.DonateEther
 )
 
 aboutbar_opts.add_separator()
 
 aboutbar_opts.add_command(
     label = 'What is SimpleEtherWallet?',
-    command = AboutWallet
+    command = MenuItems.AboutWallet
 )
 
 aboutbar.add_cascade(
@@ -2822,14 +2821,14 @@ class AddContact(tk.Toplevel):
 
         if os.name == 'nt':
             self.lift()
-            
+
         self.title('SimpleEtherWallet  -  Add Contact')
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         if os.name == 'nt':
             center_window(560, 340, self)
-            
+
         else:
             center_window(640, 340, self)
 
@@ -3077,7 +3076,7 @@ class DelContact(tk.Toplevel):
             if len(contactbook['name']) == 0:
                 if os.name == 'nt':
                     self.lift()
-                
+
                 messagebox.showerror(
                     title = 'Error',
                     message = 'Contact book is empty',
@@ -3135,7 +3134,7 @@ class AddressBook(tk.Toplevel):
         # Causes a weird graphical problem on Linux Mint
         if os.name == 'nt':
             self.lift()
-            
+
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         self.row_configs = {
@@ -3151,7 +3150,7 @@ class AddressBook(tk.Toplevel):
 
         if os.name == 'nt':
             center_window(670, 470, self)
-            
+
         else:
             center_window(720, 470, self)
 
@@ -3550,7 +3549,7 @@ if os.name == 'nt':
     asset_list.insert(END, ' Ether (ETH)\n')
 else:
     asset_list.insert(END, ' Ether (ETH)')
-    
+
 asset_list2.insert(END, ' ' + str(w3.from_wei(w3.eth.get_balance(account.address), 'ether')))
 
 total_balance_of_assets = (float(
@@ -5305,7 +5304,7 @@ def filluplists():
 
         if os.name == 'nt':
             asset_list.insert(END, ' ' + token_name + f" ({token_symbol})\n")
-        
+
         else:
             asset_list.insert(END, ' ' + token_name + f" ({token_symbol})")
 
@@ -5314,7 +5313,7 @@ def filluplists():
 
         if os.name == 'nt':
             asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')) + '\n')
-            
+
         else:
             asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')))
 
@@ -5436,7 +5435,7 @@ side_button_frame.pack(
 
 def check_balance():
     if w3.is_connected() == True:
-        
+
         assets_total.config(
             text =  f"Total asset value: {total_balance_of_assets}",
             font = "10"
