@@ -7,6 +7,7 @@ SimpleEtherWallet is a non-custodial wallet, 100% built in Python, that aims to 
 It operates on the Ethereum mainnet, meaning that all ERC-20 tokens can be sent from/sent to SimpleEtherWallet.
 
 SimpleEtherWallet currently does **not** support connecting to dApps, but this could change in the future.
+
 SimpleEtherWallet currently does **not** support NFTs, but this could change in the future.
 
 *Benefits of using SimpleEtherWallet*:
