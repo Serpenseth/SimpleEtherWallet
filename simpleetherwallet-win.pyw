@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#===Version2.0.2===#
+#===Version2.0.3===#
 
 # NOTE I'm a Python newbie; the code is messy!!!!
 
@@ -2807,525 +2807,520 @@ else:
         contactbook['name']     = n['name']
         contactbook['address'] = n['address']
 
+class AddressBook:
+    plusicon = PhotoImage(file =  imgfolder + 'icons8-plus-48.png')
+    delicon   = PhotoImage(file = imgfolder + 'icons8-cross-50.png')
 
-global plusicon
-plusicon = PhotoImage(file =  imgfolder + 'icons8-plus-48.png')
+    # Add a contact to address book
+    class AddContact(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-global delicon
-delicon = PhotoImage(file = imgfolder + 'icons8-cross-50.png')
+            if os.name == 'nt':
+                self.lift()
 
-# Add a contact to address book
-class AddContact(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
+            self.title('SimpleEtherWallet  -  Add Contact')
+            self.resizable(False, False)
+            self.protocol("WM_DELETE_WINDOW", self.destroy)
 
-        if os.name == 'nt':
-            self.lift()
-
-        self.title('SimpleEtherWallet  -  Add Contact')
-        self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-        if os.name == 'nt':
-            center_window(560, 340, self)
-
-        else:
-            center_window(640, 340, self)
-
-        self.cname = StringVar()
-        self.caddr   = StringVar()
-
-        def close(*args):
-            self.destroy()
-
-        def cont(*args):
-            if len(self.cname.get()) == 0 or len(self.caddr.get()) == 0:
-                pass
+            if os.name == 'nt':
+                center_window(560, 340, self)
 
             else:
-                if self.invalidaddr['text'] == 'Invalid address':
+                center_window(640, 340, self)
+
+            self.cname = StringVar()
+            self.caddr   = StringVar()
+
+            def close(*args):
+                self.destroy()
+
+            def cont(*args):
+                if len(self.cname.get()) == 0 or len(self.caddr.get()) == 0:
                     pass
 
                 else:
-                    contactbook['name'].append(self.cname.get())
-                    contactbook['address'].append(self.caddr.get())
+                    if self.invalidaddr['text'] == 'Invalid address':
+                        pass
 
-                    with open(dest_path + 'contacts.json', 'w') as f:
-                        json.dump(contactbook, f)
+                    else:
+                        contactbook['name'].append(self.cname.get())
+                        contactbook['address'].append(self.caddr.get())
 
-                        AddressBook.clist.delete(0, tk.END)
-                        AddressBook.clist.insert(END, *contactbook['name'])
+                        with open(dest_path + 'contacts.json', 'w') as f:
+                            json.dump(contactbook, f)
 
-                        AddressBook.clist2.delete(0, tk.END)
-                        AddressBook.clist2.insert(END, *contactbook['address'])
+                            AddressBook.clist.delete(0, tk.END)
+                            AddressBook.clist.insert(END, *contactbook['name'])
+
+                            AddressBook.clist2.delete(0, tk.END)
+                            AddressBook.clist2.insert(END, *contactbook['address'])
+
+                    self.destroy()
+
+
+            tk.Label(
+                master = self,
+                text = '\nEnter a name for your contact. All characters are accepted\nContacts are stored on this device',
+                font = 'font 12'
+            ).pack(pady = 20)
+
+            # Contact Name
+            self.frm = tk.LabelFrame(
+                master = self,
+                bd = 4
+            )
+
+            self.frm.pack(
+                #pady = 10,
+                padx = 30,
+                fill = tk.X,
+                expand = True
+            )
+
+            self.frm1 = tk.Frame(master = self.frm)
+            self.frm1.pack(
+                pady = 20,
+                anchor = 'w'
+            )
+
+            tk.Label(
+                master = self.frm1,
+                text = 'Contact name:',
+                font = 'bold 12'
+            ).pack(
+                side = 'left',
+                padx = 7
+            )
+
+            self.name_entry = tk.Entry(
+                master = self.frm1,
+                textvariable = self.cname,
+                font = 'bold 12',
+                width = 33
+            )
+
+            self.name_entry.bind('<Return>', cont)
+
+            self.name_entry.pack(
+                side = 'left',
+                padx = 17,
+                ipady = 4
+            )
+
+            # Contact Address
+            self.frm2 = tk.Frame(master = self.frm)
+            self.frm2.pack(anchor = 'w')
+
+            tk.Label(
+                master = self.frm2,
+                text = 'Contact address:',
+                font = 'bold 12'
+            ).pack(
+                side = 'left',
+                padx = 7
+            )
+
+            self.addr_entry = tk.Entry(
+                master = self.frm2,
+                textvariable = self.caddr,
+                font = 'bold 10',
+                width = 42
+            )
+
+            self.addr_entry.bind('<Return>', cont)
+
+            self.addr_entry.pack(
+                side = 'left',
+                ipady = 4
+            )
+
+            # Invallid address msg
+            self.invalidframe = tk.Frame(master = self.frm)
+            self.invalidframe.pack(pady = 5)
+
+            self.invalidaddr = tk.Label(
+                master = self.invalidframe,
+                text = '',
+                font = 'bold 13',
+                fg = 'black'
+            )
+
+            self.invalidaddr.pack()
+
+            def isvalid(event):
+                if len(self.caddr.get()) == 0:
+                    self.invalidaddr.configure(
+                        text = '',
+                        fg = 'black'
+                    )
+
+                if w3.is_address(self.caddr.get()) == False:
+                    self.invalidaddr.configure(
+                        text = 'Invalid address',
+                        fg = 'red'
+                    )
+
+                else:
+                    self.invalidaddr.configure(
+                        text = '',
+                        fg = 'black'
+                    )
+
+            self.addr_entry.bind('<KeyRelease>', isvalid)
+
+            # Buttons
+            self.btnframe = tk.Frame(master = self)
+            self.btnframe.pack(
+                padx = 40,
+                pady = 30
+            )
+
+            self.btnok = tk.Button(
+                master = self.btnframe,
+                text = 'Continue',
+                font = 'bold 14',
+                command = cont
+            )
+
+            self.btnok.pack(
+                side = 'right',
+                ipadx = 4
+            )
+
+            self.btncancel = tk.Button(
+                master = self.btnframe,
+                text = 'Cancel',
+                font = 'bold 14',
+                command = self.destroy
+            )
+
+            self.btncancel.pack(
+                side = 'left',
+                padx = 20,
+                ipadx = 4
+            )
+
+    # Remove a contact from address book
+    class DelContact(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
+
+            self.title("SimpleEtherWallet  -  Delete contact")
+            self.resizable(False, False)
+            self.protocol("WM_DELETE_WINDOW", self.destroy)
+
+            center_window(400, 370, self)
+
+            tk.Label(
+                master = self,
+                text = '\nSelect the contact that you wish to remove',
+                font = 'bold 14'
+            ).pack(
+                pady = 10,
+                padx = 20
+            )
+
+            self.cframe = tk.LabelFrame(
+                master = self,
+                bd = 5
+            )
+
+            self.cframe.pack(
+                fill = tk.BOTH,
+                expand = True,
+                padx = 25,
+                pady = 20
+            )
+
+            #choice = StringVar()
+
+            self.alist = tk.Listbox(
+                master = self.cframe,
+                font = 'bold 13',
+                #listvariable = choice,
+                selectmode = 'single'
+            )
+
+            self.alist.pack(
+                fill = tk.BOTH,
+                expand = True
+            )
+
+            self.sbar = tk.Scrollbar(
+                master = self.alist,
+                repeatdelay = 1
+            )
+
+            self.sbar.pack(
+                side = 'right',
+                fill = tk.Y,
+            )
+
+            self.alist.insert(END, *contactbook['name'])
+
+            self.name = StringVar()
+
+            def get_choice(*args):
+                #inp = self.alist.curselection()
+                self.name.set(self.alist.curselection())
+
+            self.alist.bind('<<ListboxSelect>>', get_choice)
+
+            def del_entry():
+                if len(contactbook['name']) == 0:
+                    if os.name == 'nt':
+                        self.lift()
+
+                    messagebox.showerror(
+                        title = 'Error',
+                        message = 'Contact book is empty',
+                        icon = 'error'
+                    )
+
+                    self.lift()
+                    return
+
+                self.choice = str(self.name.get()).replace('(', '').replace(',)', '')
+
+                self.num: int = int(self.choice)
+
+                del contactbook['name'][self.num]
+                del contactbook['address'][self.num]
+
+                with open(contactsjson, 'w') as f:
+                    json.dump(contactbook, f)
+
+                    AddressBook.clist.delete(self.num)
+                    AddressBook.clist2.delete(self.num)
 
                 self.destroy()
 
+            tk.Button(
+                master = self.cframe,
+                text = 'Cancel',
+                font = 'bold 12',
+                command = self.destroy
+            ).pack(
+                pady = 30,
+                padx = 60,
+                ipady = 4,
+                side = 'left',
+            )
 
-        tk.Label(
-            master = self,
-            text = '\nEnter a name for your contact. All characters are accepted\nContacts are stored on this device',
-            font = 'font 12'
-        ).pack(pady = 20)
+            tk.Button(
+                master = self.cframe,
+                text = 'Continue',
+                font = 'bold 12',
+                command = del_entry
+            ).pack(
+                pady = 30,
+                padx = 4,
+                ipady = 4,
+                side = 'left',
+            )
 
-        # Contact Name
-        self.frm = tk.LabelFrame(
-            master = self,
-            bd = 4
-        )
+    # Address book window
+    class ABWindow(tk.Toplevel):
+        def __init__(self):
+            super().__init__()
 
-        self.frm.pack(
-            #pady = 10,
-            padx = 30,
-            fill = tk.X,
-            expand = True
-        )
+            # https://stackoverflow.com/questions/1892339/how-to-make-a-tkinter-window-jump-to-the-front
+            # Causes a weird graphical problem on Linux Mint
+            if os.name == 'nt':
+                self.lift()
 
-        self.frm1 = tk.Frame(master = self.frm)
-        self.frm1.pack(
-            pady = 20,
-            anchor = 'w'
-        )
+            self.protocol("WM_DELETE_WINDOW", self.destroy)
 
-        tk.Label(
-            master = self.frm1,
-            text = 'Contact name:',
-            font = 'bold 12'
-        ).pack(
-            side = 'left',
-            padx = 7
-        )
+            self.row_configs = {
+                'padx': 22,
+                'pady': 7,
+                'anchor': 'w',
+                'fill': 'x',
+                'expand': True
+            }
 
-        self.name_entry = tk.Entry(
-            master = self.frm1,
-            textvariable = self.cname,
-            font = 'bold 12',
-            width = 33
-        )
+            self.title("SimpleEtherWallet  -  Address Book")
+            self.resizable(False, False)
 
-        self.name_entry.bind('<Return>', cont)
-
-        self.name_entry.pack(
-            side = 'left',
-            padx = 17,
-            ipady = 4
-        )
-
-        # Contact Address
-        self.frm2 = tk.Frame(master = self.frm)
-        self.frm2.pack(anchor = 'w')
-
-        tk.Label(
-            master = self.frm2,
-            text = 'Contact address:',
-            font = 'bold 12'
-        ).pack(
-            side = 'left',
-            padx = 7
-        )
-
-        self.addr_entry = tk.Entry(
-            master = self.frm2,
-            textvariable = self.caddr,
-            font = 'bold 10',
-            width = 42
-        )
-
-        self.addr_entry.bind('<Return>', cont)
-
-        self.addr_entry.pack(
-            side = 'left',
-            ipady = 4
-        )
-
-        # Invallid address msg
-        self.invalidframe = tk.Frame(master = self.frm)
-        self.invalidframe.pack(pady = 5)
-
-        self.invalidaddr = tk.Label(
-            master = self.invalidframe,
-            text = '',
-            font = 'bold 13',
-            fg = 'black'
-        )
-
-        self.invalidaddr.pack()
-
-        def isvalid(event):
-            if len(self.caddr.get()) == 0:
-                self.invalidaddr.configure(
-                    text = '',
-                    fg = 'black'
-                )
-
-            if w3.is_address(self.caddr.get()) == False:
-                self.invalidaddr.configure(
-                    text = 'Invalid address',
-                    fg = 'red'
-                )
+            if os.name == 'nt':
+                center_window(670, 470, self)
 
             else:
-                self.invalidaddr.configure(
-                    text = '',
-                    fg = 'black'
-                )
-
-        self.addr_entry.bind('<KeyRelease>', isvalid)
-
-        # Buttons
-        self.btnframe = tk.Frame(master = self)
-        self.btnframe.pack(
-            padx = 40,
-            pady = 30
-        )
-
-        self.btnok = tk.Button(
-            master = self.btnframe,
-            text = 'Continue',
-            font = 'bold 14',
-            command = cont
-        )
-
-        self.btnok.pack(
-            side = 'right',
-            ipadx = 4
-        )
-
-        self.btncancel = tk.Button(
-            master = self.btnframe,
-            text = 'Cancel',
-            font = 'bold 14',
-            command = self.destroy
-        )
-
-        self.btncancel.pack(
-            side = 'left',
-            padx = 20,
-            ipadx = 4
-        )
-
-       # self.addcontact  = AddContact
-
-# Remove a contact from address book
-class DelContact(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-
-        self.title("SimpleEtherWallet  -  Delete contact")
-        self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-        center_window(400, 370, self)
-
-        tk.Label(
-            master = self,
-            text = '\nSelect the contact that you wish to remove',
-            font = 'bold 14'
-        ).pack(
-            pady = 10,
-            padx = 20
-        )
-
-        self.cframe = tk.LabelFrame(
-            master = self,
-            bd = 5
-        )
-
-        self.cframe.pack(
-            fill = tk.BOTH,
-            expand = True,
-            padx = 25,
-            pady = 20
-        )
-
-        #choice = StringVar()
-
-        self.alist = tk.Listbox(
-            master = self.cframe,
-            font = 'bold 13',
-            #listvariable = choice,
-            selectmode = 'single'
-        )
-
-        self.alist.pack(
-            fill = tk.BOTH,
-            expand = True
-        )
-
-        self.sbar = tk.Scrollbar(
-            master = self.alist,
-            repeatdelay = 1
-        )
-
-        self.sbar.pack(
-            side = 'right',
-            fill = tk.Y,
-        )
-
-        self.alist.insert(END, *contactbook['name'])
-
-        self.name = StringVar()
-
-        def get_choice(*args):
-            #inp = self.alist.curselection()
-            self.name.set(self.alist.curselection())
-
-        self.alist.bind('<<ListboxSelect>>', get_choice)
-
-        def del_entry():
-            if len(contactbook['name']) == 0:
-                if os.name == 'nt':
-                    self.lift()
-
-                messagebox.showerror(
-                    title = 'Error',
-                    message = 'Contact book is empty',
-                    icon = 'error'
-                )
-
-                self.lift()
-                return
-
-            self.choice = str(self.name.get()).replace('(', '').replace(',)', '')
-
-            self.num: int = int(self.choice)
-
-            del contactbook['name'][self.num]
-            del contactbook['address'][self.num]
-
-            with open(contactsjson, 'w') as f:
-                json.dump(contactbook, f)
-
-                AddressBook.clist.delete(self.num)
-                AddressBook.clist2.delete(self.num)
-
-            self.destroy()
-
-        tk.Button(
-            master = self.cframe,
-            text = 'Cancel',
-            font = 'bold 12',
-            command = self.destroy
-        ).pack(
-            pady = 30,
-            padx = 60,
-            ipady = 4,
-            side = 'left',
-        )
-
-        tk.Button(
-            master = self.cframe,
-            text = 'Continue',
-            font = 'bold 12',
-            command = del_entry
-        ).pack(
-            pady = 30,
-            padx = 4,
-            ipady = 4,
-            side = 'left',
-        )
-
-# Address book class
-class AddressBook(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-
-        # https://stackoverflow.com/questions/1892339/how-to-make-a-tkinter-window-jump-to-the-front
-        # Causes a weird graphical problem on Linux Mint
-        if os.name == 'nt':
-            self.lift()
-
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-        self.row_configs = {
-            'padx': 22,
-            'pady': 7,
-            'anchor': 'w',
-            'fill': 'x',
-            'expand': True
-        }
-
-        self.title("SimpleEtherWallet  -  Address Book")
-        self.resizable(False, False)
-
-        if os.name == 'nt':
-            center_window(670, 470, self)
-
-        else:
-            center_window(720, 470, self)
-
-        tk.Label(
-            master = self,
-            text = '\nContacts',
-            font = 'bold 20'
-        ).pack(anchor = 'center')
-
-        self.frame_p = tk.LabelFrame(
-            master = self,
-            bd = 5
-        )
-
-        self.sbar = tk.Scrollbar(
-            self.frame_p,
-            repeatdelay = 1
-        )
-
-        self.sbar.pack(
-            side = 'right',
-            fill = tk.Y,
-            padx = 2
-        )
-
-        self.upframe = tk.Frame(master = self.frame_p)
-        self.upframe.pack()
-
-        self.upframe_name = tk.Frame(master = self.upframe)
-        self.upframe_name.pack(side = 'left')
-
-        tk.Label(
-            master = self.upframe_name,
-            text = ' '
-        ).pack(
-            side = 'right',
-            ipadx = 120
-        )
-
-        tk.Label(
-            master = self.upframe_name,
-            text = 'Name',
-        ).pack(side = 'left')
-
-        self.upframe_address = tk.Frame(master = self.upframe)
-        self.upframe_address.pack(side = 'right')
-
-        tk.Label(
-            #master = self.upframe,
-            master = self.upframe_address,
-            text = 'Address'
-        ).pack(side = 'left')
-
-        self.frame_p.pack(
-            fill = tk.BOTH,
-            expand = True,
-            padx = 25,
-            pady = 20
-        )
-
-        self.Master = {'master': self.frame_p}
-
-        self.boxframe = tk.Frame(**self.Master)
-
-        self.boxframe.pack(
-            fill = tk.BOTH,
-            expand = True,
-        )
-
-        self.boxconf = {
-            'master': self.boxframe,
-            'font':  'bold 10'
-        }
-
-        # Contact names
-        AddressBook.clist = tk.Listbox(**self.boxconf)
-
-        def noselect(event):
-            return 'break'
-
-        AddressBook.clist.bind('<Button-1>',  noselect)
-        AddressBook.clist.bind('<Motion>', noselect)
-        AddressBook.clist.bind('<Leave>', noselect)
-
-        AddressBook.clist.bind('<Button-1>',  noselect)
-        AddressBook.clist.bind('<Motion>', noselect)
-        AddressBook.clist.bind('<Leave>', noselect)
-
-        AddressBook.clist.insert(END, *contactbook['name'])
-        AddressBook.clist.pack(
-            side = 'left',
-            fill = tk.BOTH,
-            expand = True
-        )
-
-        # Contact addresses
-        AddressBook.clist2 = tk.Listbox(**self.boxconf)
-
-        AddressBook.clist2.bind('<Button-1>',  noselect)
-        AddressBook.clist2.bind('<Motion>', noselect)
-        AddressBook.clist2.bind('<Leave>', noselect)
-
-        AddressBook.clist2.bind('<Button-1>',  noselect)
-        AddressBook.clist2.bind('<Motion>', noselect)
-        AddressBook.clist2.bind('<Leave>', noselect)
-
-        AddressBook.clist2.insert(END, *contactbook['address'])
-        AddressBook.clist2.pack(
-            side = 'left',
-            fill = tk.BOTH,
-            expand = True,
-        )
-
-        self.buttonframe = tk.Frame(
-            master = self.frame_p,
-            relief = 'raised'
-        )
-
-        self.buttonframe.pack(
-            fill = tk.BOTH,
-            expand = True,
-            pady = 5
-        )
-
-        # Space
-        tk.Label(
-            master = self.buttonframe,
-            text = ' '
-        ).pack(
-            side = 'left',
-            padx = 50
-        )
-
-        tk.Button(
-            master = self.buttonframe,
-            text = 'Cancel',
-            font = 'bold 16',
-            command = lambda: [
-                main.deiconify(),
-                self.destroy()
-            ]
-        ).pack(
-            side = 'left',
-            padx = 20,
-            ipady = 7,
-            ipadx = 11
-        )
-
-        # Remove contact button
-        self.deletec = tk.Button(
-            master = self.buttonframe,
-            image = delicon,
-            width = 58,
-            command = DelContact
-        )
-
-        self.deletec.pack(
-            side = 'left',
-            padx = 20,
-            ipadx = 11
-        )
-
-        # Add contact button
-        self.addc = tk.Button(
-            master = self.buttonframe,
-            image = plusicon,
-            width = 62,
-            command = AddContact
-        )
-
-        self.addc.pack(
-            side = 'left',
-            padx = 20,
-            ipadx = 11
-        )
+                center_window(720, 470, self)
+
+            tk.Label(
+                master = self,
+                text = '\nContacts',
+                font = 'bold 20'
+            ).pack(anchor = 'center')
+
+            self.frame_p = tk.LabelFrame(
+                master = self,
+                bd = 5
+            )
+
+            self.sbar = tk.Scrollbar(
+                self.frame_p,
+                repeatdelay = 1
+            )
+
+            self.sbar.pack(
+                side = 'right',
+                fill = tk.Y,
+                padx = 2
+            )
+
+            self.upframe = tk.Frame(master = self.frame_p)
+            self.upframe.pack()
+
+            self.upframe_name = tk.Frame(master = self.upframe)
+            self.upframe_name.pack(side = 'left')
+
+            tk.Label(
+                master = self.upframe_name,
+                text = ' '
+            ).pack(
+                side = 'right',
+                ipadx = 120
+            )
+
+            tk.Label(
+                master = self.upframe_name,
+                text = 'Name',
+            ).pack(side = 'left')
+
+            self.upframe_address = tk.Frame(master = self.upframe)
+            self.upframe_address.pack(side = 'right')
+
+            tk.Label(
+                #master = self.upframe,
+                master = self.upframe_address,
+                text = 'Address'
+            ).pack(side = 'left')
+
+            self.frame_p.pack(
+                fill = tk.BOTH,
+                expand = True,
+                padx = 25,
+                pady = 20
+            )
+
+            self.Master = {'master': self.frame_p}
+
+            self.boxframe = tk.Frame(**self.Master)
+
+            self.boxframe.pack(
+                fill = tk.BOTH,
+                expand = True,
+            )
+
+            self.boxconf = {
+                'master': self.boxframe,
+                'font':  'bold 10'
+            }
+
+            # Contact names
+            AddressBook.clist = tk.Listbox(**self.boxconf)
+
+            def noselect(event):
+                return 'break'
+
+            AddressBook.clist.bind('<Button-1>',  noselect)
+            AddressBook.clist.bind('<Motion>', noselect)
+            AddressBook.clist.bind('<Leave>', noselect)
+
+            AddressBook.clist.bind('<Button-1>',  noselect)
+            AddressBook.clist.bind('<Motion>', noselect)
+            AddressBook.clist.bind('<Leave>', noselect)
+
+            AddressBook.clist.insert(END, *contactbook['name'])
+            AddressBook.clist.pack(
+                side = 'left',
+                fill = tk.BOTH,
+                expand = True
+            )
+
+            # Contact addresses
+            AddressBook.clist2 = tk.Listbox(**self.boxconf)
+
+            AddressBook.clist2.bind('<Button-1>',  noselect)
+            AddressBook.clist2.bind('<Motion>', noselect)
+            AddressBook.clist2.bind('<Leave>', noselect)
+
+            AddressBook.clist2.bind('<Button-1>',  noselect)
+            AddressBook.clist2.bind('<Motion>', noselect)
+            AddressBook.clist2.bind('<Leave>', noselect)
+
+            AddressBook.clist2.insert(END, *contactbook['address'])
+            AddressBook.clist2.pack(
+                side = 'left',
+                fill = tk.BOTH,
+                expand = True,
+            )
+
+            self.buttonframe = tk.Frame(
+                master = self.frame_p,
+                relief = 'raised'
+            )
+
+            self.buttonframe.pack(
+                fill = tk.BOTH,
+                expand = True,
+                pady = 5
+            )
+
+            # Space
+            tk.Label(
+                master = self.buttonframe,
+                text = ' '
+            ).pack(
+                side = 'left',
+                padx = 50
+            )
+
+            tk.Button(
+                master = self.buttonframe,
+                text = 'Cancel',
+                font = 'bold 16',
+                command = lambda: [
+                    main.deiconify(),
+                    self.destroy()
+                ]
+            ).pack(
+                side = 'left',
+                padx = 20,
+                ipady = 7,
+                ipadx = 11
+            )
+
+            # Remove contact button
+            self.deletec = tk.Button(
+                master = self.buttonframe,
+                image = AddressBook.delicon,
+                width = 58,
+                command = AddressBook().DelContact
+            )
+
+            self.deletec.pack(
+                side = 'left',
+                padx = 20,
+                ipadx = 11
+            )
+
+            # Add contact button
+            self.addc = tk.Button(
+                master = self.buttonframe,
+                image = AddressBook.plusicon,
+                width = 62,
+                command = AddressBook().AddContact
+            )
+
+            self.addc.pack(
+                side = 'left',
+                padx = 20,
+                ipadx = 11
+            )
 
 ##@ Icons taken from: https://icons8.com/icons/ @##
 
@@ -3387,12 +3382,12 @@ global address_book
 
 address_book = PhotoImage(file = imgfolder + 'icons8-open-book-50.png')
 
-AddressBook = AddressBook
+#AddressBook = AddressBook
 
 side_button3.config(
     image = address_book,
     text = "Address Book",
-    command = AddressBook
+    command = AddressBook().ABWindow
 )
 
 side_button3.pack(
