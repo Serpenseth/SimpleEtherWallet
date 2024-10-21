@@ -10,7 +10,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-#===Version 2.0===#
+#===Version2.0.1===#
 
 # NOTE I'm a Python newbie; the code is messy!!!!
 
@@ -137,15 +137,15 @@ global imgfolder
 
 if os.name == 'nt':
     imgfolder = os.path.dirname(__file__) + '/images/'
-
+    
 else:
     imgfolder = os.path.dirname(__file__) + '/images/'
-
+    
     if not os.path.exists(imgfolder):
         """ messagebox.showerror() will complain that
             it is too early to call it, as there's no root window.
             The ugly solution is to create a Tk() like with no dest_path """
-
+        
         w = tk.Tk()
         w.withdraw()
 
@@ -158,7 +158,7 @@ else:
 
         w.destroy()
         quit()
-
+    
 # default RPC provider
 w3 = Web3(
     Web3.HTTPProvider(
@@ -170,77 +170,34 @@ w3 = Web3(
 
 w3.provider.cache_allowed_requests = True
 
-USDT_price:float = 0.0
-USDC_price:float = 0.0
+class PriceData:
+    def __init__(self, From: str, To: str):
+        self.From = From
+        self.To = To
 
-from urllib.request import urlopen
+    def fetchprice(self):
+        from urllib.request import urlopen
+         #https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
+        import ssl
 
-page_data = ''
+        context = ssl._create_unverified_context()
 
-try:
-    # Found this link here: https://ethereum.stackexchange.com/questions/38309/what-are-the-popular-api-to-get-current-exchange-rates-for-ethereum-to-usd
-    page_data = urlopen('https://api.coinbase.com/v2/exchange-rates?currency=ETH').read()
+        # A MUCH better API to fetch token price
+        page_data = urlopen(
+            f"https://min-api.cryptocompare.com/data/price?fsym={self.From}&tsyms={self.To}",
+            context=context
+        ).read()
 
-except Exception:
-    pass
+        page = page_data.decode('utf-8')
+        page = page.replace('{"USDT":', '')
+        page = page[:len(page) - 1]
 
-page = page_data.decode('utf-8')
+        if 'Response' in page:
+            return 0.0
 
-def fetch_eth_price_in(coin_symbol) -> float:
-    start = page.find(coin_symbol)
-    end  = page.find(',', start, len(page))
+        return float(page)
 
-    pricedata = page[start:end]
 
-    pricedata = pricedata.replace(":", '')
-    pricedata = pricedata.replace(coin_symbol, '')
-    pricedata = pricedata.replace('"', '')
-
-    return float(pricedata)
-
-""" Old def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to) -> float:
-    page_data2 = ''
-
-    try:
-        # Coin
-        page_data2 = urlopen(f"https://api.coinbase.com/v2/exchange-rates?currency={coin_symbol_base}").read()
-
-    except Exception:
-        pass
-
-    page2 = page_data2.decode('utf-8')
-
-    start = page2.find(coin_symbol_to)
-    end  = page2.find(',', start, len(page2))
-
-    pricedata2 = page2[start:end]
-    pricedata2 = pricedata2.replace(":", '')
-    pricedata2 = pricedata2.replace(coin_symbol_to, '')
-    pricedata2 = pricedata2.replace('"', '')
-
-    return float(pricedata2)
-"""
-
-def fetch_price_of_and_convert_to(coin_symbol_base, coin_symbol_to: str) -> float:
-    #https://stackoverflow.com/questions/27835619/urllib-and-ssl-certificate-verify-failed-error
-    import ssl
-
-    context = ssl._create_unverified_context()
-
-    # A MUCH better API to fetch token price
-    page_data2 = urlopen(
-        f"https://min-api.cryptocompare.com/data/price?fsym={coin_symbol_base}&tsyms={coin_symbol_to}",
-        context=context
-    ).read()
-
-    page2 = page_data2.decode('utf-8')
-    page2 = page2.replace('{"USDT":', '')
-    page2 = page2[:len(page2) - 1]
-
-    if 'Response' in page2:
-        return 0.0
-
-    return float(page2)
 
 # TODO: Group these into a class
 class recover_acc(tk.Toplevel):
@@ -257,7 +214,7 @@ class recover_acc(tk.Toplevel):
 
         if os.name == 'nt':
             center_window(560, 420, self)
-
+            
         else:
             center_window(620, 420, self)
 
@@ -1436,7 +1393,7 @@ with open(conf_file, 'r') as f:
     if len(contents['wallets']) != 0:
         if os.name == 'nt':
             center_window(720, 400, window)
-
+        
         else:
             center_window(880, 400, window)
 
@@ -1726,7 +1683,7 @@ with open(conf_file, 'r') as f:
     else:
         if os.name == 'nt':
             center_window(540, 520, window)
-
+            
         else:
             center_window(540, 600, window)
 
@@ -1747,7 +1704,7 @@ with open(conf_file, 'r') as f:
             pady = 12,
             padx = 5
         )
-
+            
         txt = tk.Label(
             master = smallframe,
             text = """
@@ -1819,7 +1776,7 @@ main.protocol("WM_DELETE_WINDOW", quit)
 
 if os.name == 'nt':
     center_window(700, 600, main)
-
+    
 
 aboutbar = tk.Menu(master = main)
 
@@ -2126,7 +2083,7 @@ class ShowRecoveryKey(tk.Toplevel):
 
                 self.resizable(False, False)
                 self.title("SimpleEtherWallet  -  Recovery Key")
-
+                
                 def rm_p():
                     try:
                         os.remove("p.png")
@@ -2145,9 +2102,9 @@ class ShowRecoveryKey(tk.Toplevel):
                     ]
                 )
 
-                if os.name == 'nt':
+                if os.name == 'nt': 
                     center_window(620, 570, self)
-
+                    
                 else:
                     center_window(700, 570, self)
 
@@ -2247,15 +2204,15 @@ class ShowRecoveryKey(tk.Toplevel):
 
         def checkpasswd(*args):
             if len(self.passentry.get()) == 0:
-
+                
                 if os.name == 'nt':
                     self.lift()
-
+                    
                 messagebox.showerror(
                     title = "Error",
                     message = "Password field is empty"
                 )
-
+                
                 return
 
             try:
@@ -2424,7 +2381,7 @@ class DonateEther(tk.Toplevel):
             padx = 20,
             pady = 40
         )
-
+        
         try:
             os.remove("p.png")
 
@@ -2865,14 +2822,14 @@ class AddContact(tk.Toplevel):
 
         if os.name == 'nt':
             self.lift()
-
+            
         self.title('SimpleEtherWallet  -  Add Contact')
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         if os.name == 'nt':
             center_window(560, 340, self)
-
+            
         else:
             center_window(640, 340, self)
 
@@ -3120,7 +3077,7 @@ class DelContact(tk.Toplevel):
             if len(contactbook['name']) == 0:
                 if os.name == 'nt':
                     self.lift()
-
+                
                 messagebox.showerror(
                     title = 'Error',
                     message = 'Contact book is empty',
@@ -3178,7 +3135,7 @@ class AddressBook(tk.Toplevel):
         # Causes a weird graphical problem on Linux Mint
         if os.name == 'nt':
             self.lift()
-
+            
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
         self.row_configs = {
@@ -3194,7 +3151,7 @@ class AddressBook(tk.Toplevel):
 
         if os.name == 'nt':
             center_window(670, 470, self)
-
+            
         else:
             center_window(720, 470, self)
 
@@ -3593,11 +3550,12 @@ if os.name == 'nt':
     asset_list.insert(END, ' Ether (ETH)\n')
 else:
     asset_list.insert(END, ' Ether (ETH)')
-
+    
 asset_list2.insert(END, ' ' + str(w3.from_wei(w3.eth.get_balance(account.address), 'ether')))
 
 total_balance_of_assets = (float(
-    w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
+    w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetchprice())
+#fetch_eth_price_in('USDT'))
 
 def create_contract(address: str):
     return w3.eth.contract(
@@ -4423,15 +4381,13 @@ class CoinFunctions:
                     self.valbox.pack(side = 'left')
 
                     if self.avar.get() == 'Ether (ETH)':
-                        self.valvar.set(str(fetch_eth_price_in('USDT') * float(self.amount)))
+                        self.valvar.set(str(PriceData('ETH', 'USDT').fetch_price()) * float(self.amount)))
 
                     else:
                         self.assetname = self.contract.functions.symbol().call()
 
                         self.priceofasset: float = 0.0
-                        self.priceofasset = fetch_price_of_and_convert_to(self.assetname, 'USDT')
-
-                        self.valvar.set(str(self.priceofasset * float(self.amount)))
+                        self.valvar.set(str(PriceData(self.assetname, 'USDT').fetch_price() * float(self.amount)))
                         self.valvar.set("{:.12f}".format(float(self.valvar.get())))
 
                     self.valbox['width'] = len(self.valvar.get())
@@ -4548,7 +4504,7 @@ class CoinFunctions:
 
                     self.total_label.configure(text = f"Total (in USD): ~{self.final_amount}")
 
-                    self.gasineth = float(entry3.get()) / fetch_eth_price_in('USDT')
+                    self.gasineth = float(entry3.get()) / PriceData('ETH', 'USDT').fetch_price()
 
                     ConfirmSend.GAS = self.gasineth
 
@@ -5333,7 +5289,7 @@ AssetsLoadingBar = AssetsLoadingBar()
 
 def filluplists():
     total_balance_of_assets = (float(
-        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * fetch_eth_price_in('USDT'))
+        w3.from_wei(w3.eth.get_balance(account.address), 'ether')) * PriceData('ETH', 'USDT').fetch_price()
 
     if loading == 1:
         main.withdraw()
@@ -5349,7 +5305,7 @@ def filluplists():
 
         if os.name == 'nt':
             asset_list.insert(END, ' ' + token_name + f" ({token_symbol})\n")
-
+        
         else:
             asset_list.insert(END, ' ' + token_name + f" ({token_symbol})")
 
@@ -5358,7 +5314,7 @@ def filluplists():
 
         if os.name == 'nt':
             asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')) + '\n')
-
+            
         else:
             asset_list2.insert(END,  ' ' + str(w3.from_wei(token_balance, 'ether')))
 
@@ -5480,7 +5436,7 @@ side_button_frame.pack(
 
 def check_balance():
     if w3.is_connected() == True:
-
+        
         assets_total.config(
             text =  f"Total asset value: {total_balance_of_assets}",
             font = "10"
