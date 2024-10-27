@@ -15,7 +15,7 @@ SimpleEtherWallet currently does **not** support NFTs, but this could change in 
     If, you are a memecoin master/hunter/hoarder, I would suggest you hold off using SimpleEtherWallet, until I am able to afford a paid API, or find some other way around this.
     
 3. There is no built-in swap at the moment. This *might* come in a future update.
-4. There is no built-in browser moment. This *might* come in a future update.
+4. There is no built-in browser at the moment. This *might* come in a future update.
 5. There is no WalletConnect feature at the moment. This *might* come in a future update.
 6. There is no way to scan a QR code right now. This *is* coming in a future update.
 
