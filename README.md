@@ -10,6 +10,15 @@ SimpleEtherWallet currently does **not** support connecting to dApps, but this c
 
 SimpleEtherWallet currently does **not** support NFTs, but this could change in the future.
 
+**Note on current limitations**:
+1. The API that is used to fetch coin price data is a free API. This comes with the limitation of not being able to get the price data of all ERC-20 cryptocurrencies.
+    If, you are a memecoin master/hunter/hoarder, I would suggest you hold off using SimpleEtherWallet, until I am able to afford a paid API, or find some other way around this.
+    
+3. There is no built-in swap at the moment. This *might* come in a future update.
+4. There is no built-in browser moment. This *might* come in a future update.
+5. There is no WalletConnect feature at the moment. This *might* come in a future update.
+6. There is no way to scan a QR code right now. This *is* coming in a future update.
+
 *Benefits of using SimpleEtherWallet*:
 1. Non-custodial. You own your crypto assets. Your private key is stored on your device, and it is also encrypted. Your private key does not leave your device while using SimpleEtherWallet as well.
 
@@ -17,11 +26,8 @@ SimpleEtherWallet currently does **not** support NFTs, but this could change in 
 
 3. Lightweight. SimpleEtherWallet barely comsumes any resources. It is very light, and easy to run.
     On my Windows 10 laptop that is running hardware that is a few years old, only 52.4 MB of ram is used!
-
-4. You can add any coin that is listed on a centralized exhange.
-    Why centralized exhanges? Well, I use an API that is free, and it only fetches the price from centralized exchanges. A paid API is something that I cannot afford.
  
-5. SimpleEtherWallet runs on both Windows, and Linux!
+4. SimpleEtherWallet runs on both Windows, and Linux!
 
 # Windows:
 
